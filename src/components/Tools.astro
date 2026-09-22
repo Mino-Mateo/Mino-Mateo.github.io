@@ -1,0 +1,126 @@
+---
+import { paises } from "../lib/validators";
+---
+<section id="tools" class="section">
+  <div class="container">
+    <h2 class="section-title">[ 04 ] Herramientas</h2>
+    <p class="tools-intro">
+      Un aperitivo de lo que se puede construir: verificador de números de
+      identificación por país. El cálculo corre 100% en tu navegador — no se
+      guarda ni se envía ningún dato.
+    </p>
+    <a
+      class="btn btn-outline tools-repo-link"
+      href="https://github.com/Mino-Mateo/Verificador-de-C-dula"
+      target="_blank"
+      rel="noopener"
+    >
+      Ver código en GitHub
+    </a>
+
+    <form class="tools-form" id="tools-form">
+      <div class="tools-field">
+        <label for="tools-pais">País / documento</label>
+        <select id="tools-pais" name="pais">
+          {paises.map((p) => <option value={p.id}>{p.nombre}</option>)}
+        </select>
+      </div>
+      <div class="tools-field">
+        <label for="tools-valor">Número</label>
+        <input id="tools-valor" name="valor" type="text" autocomplete="off" />
+      </div>
+      <button type="submit" class="btn">Verificar</button>
+    </form>
+
+    <div id="tools-result" class="tools-result" hidden></div>
+  </div>
+</section>
+
+<script>
+  import { paises } from "../lib/validators";
+
+  const form = document.querySelector<HTMLFormElement>("#tools-form");
+  const paisSelect = document.querySelector<HTMLSelectElement>("#tools-pais");
+  const valorInput = document.querySelector<HTMLInputElement>("#tools-valor");
+  const resultBox = document.querySelector<HTMLDivElement>("#tools-result");
+
+  function actualizarPlaceholder() {
+    const pais = paises.find((p) => p.id === paisSelect?.value);
+    if (pais && valorInput) valorInput.placeholder = pais.placeholder;
+  }
+
+  paisSelect?.addEventListener("change", actualizarPlaceholder);
+  actualizarPlaceholder();
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const pais = paises.find((p) => p.id === paisSelect?.value);
+    if (!pais || !valorInput || !resultBox) return;
+
+    const resultado = pais.validar(valorInput.value);
+
+    resultBox.hidden = false;
+    resultBox.textContent = resultado.mensaje;
+    resultBox.classList.toggle("valido", resultado.valido);
+    resultBox.classList.toggle("invalido", !resultado.valido);
+  });
+</script>
+
+<style>
+.tools-intro {
+  color: var(--color-text-muted);
+  max-width: 600px;
+  margin-bottom: var(--space-2);
+}
+.tools-repo-link {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+}
+.tools-form {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  max-width: 600px;
+}
+.tools-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.tools-field label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+.tools-field select,
+.tools-field input {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.6rem;
+  font-family: var(--font-sans);
+  min-width: 200px;
+}
+.tools-field select:focus,
+.tools-field input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.tools-result {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  max-width: 600px;
+}
+.tools-result.valido {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.tools-result.invalido {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+</style>
