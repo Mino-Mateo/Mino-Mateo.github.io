@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#0a0e14"/>
+  <rect x="0.5" y="0.5" width="31" height="31" fill="none" stroke="#23272f" stroke-width="1"/>
+  <text
+    x="50%"
+    y="52%"
+    dominant-baseline="middle"
+    text-anchor="middle"
+    font-family="'JetBrains Mono', 'Courier New', monospace"
+    font-size="18"
+    font-weight="600"
+    fill="#4fd1c5"
+  >M</text>
+</svg>
