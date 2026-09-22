@@ -1,0 +1,40 @@
+---
+const socials = [
+  { href: "https://github.com/Mino-Mateo", label: "GitHub" },
+  { href: "https://www.linkedin.com/in/mateo-miño/", label: "LinkedIn" },
+  { href: "https://www.youtube.com/@mateomino-vc4hl", label: "YouTube" },
+];
+---
+<footer class="footer">
+  <div class="container footer-inner">
+    <ul class="footer-links">
+      {socials.map((s) => (
+        <li><a href={s.href} target="_blank" rel="noopener">{s.label}</a></li>
+      ))}
+    </ul>
+    <a href="#home" class="back-to-top">↑ Volver arriba</a>
+  </div>
+</footer>
+
+<style>
+.footer { padding: var(--space-4) 0; }
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.footer-links {
+  list-style: none;
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.footer-links a { color: var(--color-text-muted) !important; text-decoration: none !important; }
+.footer-links a:hover { color: var(--color-accent) !important; }
+.back-to-top { font-family: var(--font-mono); font-size: 0.85rem; color: var(--color-text-muted) !important; text-decoration: none !important; }
+</style>
