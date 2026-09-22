@@ -1,0 +1,27 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import { projects } from '../data/projects';
+---
+<section id="projects" class="section">
+  <div class="container">
+    <p class="section-title">[ 03 ] Proyectos</p>
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <ProjectCard
+          name={project.name}
+          description={project.description}
+          role={project.role}
+          stack={project.stack}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-3);
+}
+</style>
