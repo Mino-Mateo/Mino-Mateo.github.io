@@ -3,34 +3,25 @@
 <section id="contact" class="section">
   <div class="container">
     <p class="section-title">[ 05 ] Contacto</p>
-    <form class="contact-form" method="GET" action="mailto:mateo.mino@epn.edu.ec" enctype="text/plain">
-      <input type="text" name="name" placeholder="Tu nombre" required />
-      <input type="email" name="email" placeholder="Tu email" required />
-      <textarea name="message" placeholder="Tu mensaje" rows="5" required></textarea>
-      <button type="submit" class="btn">Enviar</button>
-    </form>
+    <p class="contact-text">
+      ¿Quieres hablar de un proyecto o colaboración? Escríbeme por GitHub o LinkedIn.
+    </p>
+    <div class="contact-links">
+      <a class="btn" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-outline" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
   </div>
 </section>
 
 <style>
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+.contact-text {
+  color: var(--color-text-muted);
   max-width: 480px;
+  margin-bottom: var(--space-3);
 }
-.contact-form input,
-.contact-form textarea {
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  padding: 0.6rem;
-  font-family: var(--font-sans);
+.contact-links {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
-.contact-form input:focus,
-.contact-form textarea:focus {
-  outline: none;
-  border-color: var(--color-accent);
-}
-.contact-form button { align-self: flex-start; }
 </style>
