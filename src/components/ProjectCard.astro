@@ -1,0 +1,33 @@
+---
+interface Props {
+  name: string;
+  description: string;
+  role: string;
+  stack: string[];
+}
+const { name, description, role, stack } = Astro.props;
+---
+<article class="card">
+  <h3>{name}</h3>
+  <p class="card-desc">{description}</p>
+  <p class="card-role"><span class="label">ROL:</span> {role}</p>
+  <div class="card-stack">
+    {stack.map((tech) => <span class="tag">{tech}</span>)}
+  </div>
+</article>
+
+<style>
+.card {
+  border: 1px solid var(--color-border);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--color-bg-elevated);
+}
+.card h3 { font-size: 1.1rem; }
+.card-desc { color: var(--color-text-muted); font-size: 0.9rem; flex-grow: 1; }
+.card-role { font-size: 0.85rem; color: var(--color-text-muted); }
+.label { font-family: var(--font-mono); color: var(--color-accent); }
+.card-stack { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-top: var(--space-1); }
+</style>
