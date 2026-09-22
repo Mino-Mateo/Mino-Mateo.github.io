@@ -1,0 +1,88 @@
+:root {
+  --color-bg: #0a0e14;
+  --color-bg-elevated: #0d1117;
+  --color-text: #e6e8eb;
+  --color-text-muted: #8b949e;
+  --color-accent: #4fd1c5;
+  --color-border: #23272f;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 4rem;
+  --space-8: 6rem;
+
+  --max-width: 1100px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+.section {
+  padding: var(--space-8) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  margin: 0 0 var(--space-2) 0;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  padding: 0.15rem 0.5rem;
+  display: inline-block;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent) !important;
+  text-decoration: none !important;
+  display: inline-block;
+  cursor: pointer;
+  background: transparent;
+}
+.btn:hover { background: var(--color-accent); color: var(--color-bg) !important; }
+
+.btn-outline { border-color: var(--color-border); color: var(--color-text-muted) !important; }
+.btn-outline:hover { border-color: var(--color-accent); color: var(--color-accent) !important; background: transparent; }
