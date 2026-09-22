@@ -1,0 +1,36 @@
+---
+---
+<section id="contact" class="section">
+  <div class="container">
+    <p class="section-title">[ 05 ] Contacto</p>
+    <form class="contact-form" method="GET" action="mailto:mateo.mino@epn.edu.ec" enctype="text/plain">
+      <input type="text" name="name" placeholder="Tu nombre" required />
+      <input type="email" name="email" placeholder="Tu email" required />
+      <textarea name="message" placeholder="Tu mensaje" rows="5" required></textarea>
+      <button type="submit" class="btn">Enviar</button>
+    </form>
+  </div>
+</section>
+
+<style>
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 480px;
+}
+.contact-form input,
+.contact-form textarea {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.6rem;
+  font-family: var(--font-sans);
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.contact-form button { align-self: flex-start; }
+</style>
