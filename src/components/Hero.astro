@@ -1,9 +1,17 @@
 ---
+import { Image } from "astro:assets";
+import profilePhoto from "../assets/images/mateo-mino.jpg";
 ---
 <section id="home" class="hero">
   <div class="hero-grid-bg"></div>
   <div class="container hero-content">
-    <img class="hero-photo" src="/images/mateo-mino.jpg" alt="Foto de Mateo Miño" />
+    <Image
+      class="hero-photo"
+      src={profilePhoto}
+      alt="Foto de Mateo Miño"
+      width={280}
+      height={280}
+    />
     <div class="hero-text">
       <p class="section-title">Ciberseguridad · Inteligencia · OSINT</p>
       <h1>Mateo Miño</h1>

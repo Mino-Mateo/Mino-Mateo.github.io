@@ -1,9 +1,16 @@
+import type { ImageMetadata } from "astro";
+import intellifyImage from "../assets/images/projects/intellify.jpeg";
+import docentraImage from "../assets/images/projects/docentra.png";
+import wordygoImage from "../assets/images/projects/wordygo.png";
+import jonezerImage from "../assets/images/projects/jonezer.jpeg";
+import disnomiaImage from "../assets/images/projects/disnomia.png";
+
 export interface Project {
   name: string;
   description: string;
   role: string;
   stack: string[];
-  image: string;
+  image: ImageMetadata;
 }
 
 export const projects: Project[] = [
@@ -13,14 +20,14 @@ export const projects: Project[] = [
       "Sistema de ciberinteligencia para indexación de información, creación de fichas OSINT e investigación.",
     role: "Autoría completa",
     stack: ["React", "Python", "SQL"],
-    image: "/images/projects/intellify.jpeg",
+    image: intellifyImage,
   },
   {
     name: "Docentra",
     description: "Sistema de evaluación docente y gestión académica.",
     role: "Backend, cálculos, base de datos",
     stack: ["React", "Bun", "PostgreSQL", ".NET"],
-    image: "/images/projects/docentra.png",
+    image: docentraImage,
   },
   {
     name: "WordyGo",
@@ -28,7 +35,7 @@ export const projects: Project[] = [
       "Sistema multirol de ejercicios de inglés, hecho para Salazar Editores.",
     role: "Backend, base de datos, sistemas de seguridad",
     stack: ["React", "Supabase", "NestJS"],
-    image: "/images/projects/wordygo.png",
+    image: wordygoImage,
   },
   {
     name: "Jonezer App",
@@ -36,13 +43,13 @@ export const projects: Project[] = [
       "Aplicación móvil de gestión comercial: clientes, ventas y productos.",
     role: "Funcionalidades de cálculo y roles",
     stack: ["Flutter"],
-    image: "/images/projects/jonezer.jpeg",
+    image: jonezerImage,
   },
   {
     name: "Disnomia",
     description: "Microservicio API para calificación de ejercicios educativos.",
     role: "Motor de evaluación",
     stack: ["NestJS"],
-    image: "/images/projects/disnomia.png",
+    image: disnomiaImage,
   },
 ];
