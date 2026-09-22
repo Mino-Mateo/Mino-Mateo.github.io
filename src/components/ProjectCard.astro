@@ -4,26 +4,42 @@ interface Props {
   description: string;
   role: string;
   stack: string[];
+  image: string;
 }
-const { name, description, role, stack } = Astro.props;
+const { name, description, role, stack, image } = Astro.props;
 ---
 <article class="card">
-  <h3>{name}</h3>
-  <p class="card-desc">{description}</p>
-  <p class="card-role"><span class="label">ROL:</span> {role}</p>
-  <div class="card-stack">
-    {stack.map((tech) => <span class="tag">{tech}</span>)}
+  <img class="card-image" src={image} alt={`Captura del proyecto ${name}`} loading="lazy" />
+  <div class="card-body">
+    <h3>{name}</h3>
+    <p class="card-desc">{description}</p>
+    <p class="card-role"><span class="label">ROL:</span> {role}</p>
+    <div class="card-stack">
+      {stack.map((tech) => <span class="tag">{tech}</span>)}
+    </div>
   </div>
 </article>
 
 <style>
 .card {
   border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-elevated);
+  overflow: hidden;
+}
+.card-image {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid var(--color-border);
+}
+.card-body {
   padding: var(--space-3);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  background: var(--color-bg-elevated);
 }
 .card h3 { font-size: 1.1rem; }
 .card-desc { color: var(--color-text-muted); font-size: 0.9rem; flex-grow: 1; }

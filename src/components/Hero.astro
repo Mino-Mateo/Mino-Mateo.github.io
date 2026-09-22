@@ -3,15 +3,18 @@
 <section id="home" class="hero">
   <div class="hero-grid-bg"></div>
   <div class="container hero-content">
-    <p class="section-title">Ciberseguridad · Inteligencia · OSINT</p>
-    <h1>Mateo Miño</h1>
-    <p class="hero-bio">
-      Tech Lead & Seguridad Digital. Diseño y construyo herramientas de
-      inteligencia, investigación e infraestructura segura.
-    </p>
-    <div class="hero-links">
-      <a class="btn" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">GitHub</a>
-      <a class="btn btn-outline" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
+    <img class="hero-photo" src="/images/mateo-mino.jpg" alt="Foto de Mateo Miño" />
+    <div class="hero-text">
+      <p class="section-title">Ciberseguridad · Inteligencia · OSINT</p>
+      <h1>Mateo Miño</h1>
+      <p class="hero-bio">
+        Tech Lead & Seguridad Digital. Diseño y construyo herramientas de
+        inteligencia, investigación e infraestructura segura.
+      </p>
+      <div class="hero-links">
+        <a class="btn" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn btn-outline" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
     </div>
   </div>
 </section>
@@ -34,7 +37,21 @@
   opacity: 0.05;
   pointer-events: none;
 }
-.hero-content { position: relative; }
+.hero-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.hero-photo {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.hero-text { flex: 1; min-width: 260px; }
 .hero-bio {
   max-width: 560px;
   color: var(--color-text-muted);
