@@ -1,0 +1,64 @@
+---
+import { paises } from "../../lib/validators";
+---
+<div class="tool-card">
+  <h3>Verificador de identificación</h3>
+  <p class="tool-desc">
+    Verificador de números de identificación por país. El cálculo corre
+    100% en tu navegador — no se guarda ni se envía ningún dato.
+  </p>
+  <a
+    class="btn btn-outline tool-repo-link"
+    href="https://github.com/Mino-Mateo/Verificador-de-C-dula"
+    target="_blank"
+    rel="noopener"
+  >
+    Ver código en GitHub
+  </a>
+
+  <form class="tool-form" id="cedula-form">
+    <div class="tool-field">
+      <label for="cedula-pais">País / documento</label>
+      <select id="cedula-pais" name="pais">
+        {paises.map((p) => <option value={p.id}>{p.nombre}</option>)}
+      </select>
+    </div>
+    <div class="tool-field">
+      <label for="cedula-valor">Número</label>
+      <input id="cedula-valor" name="valor" type="text" autocomplete="off" />
+    </div>
+    <button type="submit" class="btn">Verificar</button>
+  </form>
+
+  <div id="cedula-result" class="tool-result" hidden></div>
+</div>
+
+<script>
+  import { paises } from "../../lib/validators";
+
+  const form = document.querySelector<HTMLFormElement>("#cedula-form");
+  const paisSelect = document.querySelector<HTMLSelectElement>("#cedula-pais");
+  const valorInput = document.querySelector<HTMLInputElement>("#cedula-valor");
+  const resultBox = document.querySelector<HTMLDivElement>("#cedula-result");
+
+  function actualizarPlaceholder() {
+    const pais = paises.find((p) => p.id === paisSelect?.value);
+    if (pais && valorInput) valorInput.placeholder = pais.placeholder;
+  }
+
+  paisSelect?.addEventListener("change", actualizarPlaceholder);
+  actualizarPlaceholder();
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const pais = paises.find((p) => p.id === paisSelect?.value);
+    if (!pais || !valorInput || !resultBox) return;
+
+    const resultado = pais.validar(valorInput.value);
+
+    resultBox.hidden = false;
+    resultBox.textContent = resultado.mensaje;
+    resultBox.classList.toggle("valido", resultado.valido);
+    resultBox.classList.toggle("invalido", !resultado.valido);
+  });
+</script>

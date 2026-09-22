@@ -1,0 +1,354 @@
+---
+---
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
+  crossorigin="anonymous"
+/>
+<div class="tool-card">
+  <h3>Consulta predial GeoQuito</h3>
+  <p class="tool-desc">
+    Escribe una calle de Quito, haz clic en el mapa y mira la información
+    básica del predio en ese punto — usando la API pública y abierta del
+    geoportal municipal (sin autenticación). Versión reducida: el sistema
+    completo también permite buscar por cédula, propietario, valoración y
+    generar reportes, pero eso se queda fuera de este demo público.
+  </p>
+  <a
+    class="btn btn-outline tool-repo-link"
+    href="https://github.com/Mino-Mateo/Sistema-Geoquito"
+    target="_blank"
+    rel="noopener"
+  >
+    Ver código en GitHub
+  </a>
+
+  <div class="geo-field">
+    <label for="geo-dir">Calle o dirección</label>
+    <input id="geo-dir" type="text" autocomplete="off" placeholder="Ej: Av. Amazonas y Naciones Unidas" />
+    <div id="geo-sugerencias" class="geo-sugerencias" hidden></div>
+  </div>
+
+  <div id="geo-status" class="geo-status"></div>
+  <div id="geo-map" class="geo-map"></div>
+  <div id="geo-result" class="tool-result" hidden></div>
+</div>
+
+<script>
+  const GEOCODER = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+  const BASE = "https://geoquito.quito.gob.ec/server/rest/services";
+  const CATASTRO = "web_reference_dmc/catastro_dmc_view";
+  const CAPA = 14;
+  const DMQ_EXTENT = "-78.947686,-0.590609,-78.165104,0.277314";
+
+  // Campos deliberadamente limitados: sin cédula ni nombre de propietario,
+  // sin valores económicos — solo identificación básica del predio.
+  const CAMPOS = ["predio", "clavcatastral", "parroquia", "nomenclatura", "estado"];
+  const ETIQUETAS: Record<string, string> = {
+    predio: "Predio",
+    clavcatastral: "Clave catastral",
+    parroquia: "Parroquia",
+    nomenclatura: "Nomenclatura",
+    estado: "Estado",
+  };
+
+  let mapa: any = null;
+  let marcador: any = null;
+  let capaPredio: any = null;
+  let sugerencias: Array<{ text: string; magicKey?: string }> = [];
+  let dirTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const dirInput = document.querySelector<HTMLInputElement>("#geo-dir");
+  const sugerenciasBox = document.querySelector<HTMLDivElement>("#geo-sugerencias");
+  const statusEl = document.querySelector<HTMLDivElement>("#geo-status");
+  const resultBox = document.querySelector<HTMLDivElement>("#geo-result");
+
+  function setStatus(texto: string, tipo: "" | "ok" | "err" = "") {
+    if (!statusEl) return;
+    statusEl.textContent = texto;
+    statusEl.className = `geo-status${tipo ? " " + tipo : ""}`;
+  }
+
+  function ocultarSugerencias() {
+    sugerencias = [];
+    if (sugerenciasBox) {
+      sugerenciasBox.hidden = true;
+      sugerenciasBox.textContent = "";
+    }
+  }
+
+  function pintarSugerencias(lista: Array<{ text: string; magicKey?: string }>) {
+    sugerencias = lista;
+    if (!sugerenciasBox) return;
+    sugerenciasBox.textContent = "";
+    if (!lista.length) {
+      sugerenciasBox.hidden = true;
+      return;
+    }
+    lista.forEach((s, i) => {
+      const div = document.createElement("div");
+      div.className = "geo-sug";
+      div.textContent = s.text;
+      div.dataset.i = String(i);
+      sugerenciasBox.appendChild(div);
+    });
+    sugerenciasBox.hidden = false;
+  }
+
+  async function sugerirDireccion(texto: string) {
+    try {
+      const p = new URLSearchParams({
+        text: texto,
+        f: "json",
+        maxSuggestions: "6",
+        countryCode: "ECU",
+        searchExtent: DMQ_EXTENT,
+      });
+      const r = await fetch(`${GEOCODER}/suggest?${p}`);
+      const d = await r.json();
+      if (dirInput?.value.trim() !== texto) return;
+      pintarSugerencias(d.suggestions || []);
+    } catch {
+      ocultarSugerencias();
+    }
+  }
+
+  async function irADireccion(texto: string, magicKey?: string) {
+    ocultarSugerencias();
+    setStatus(`Buscando "${texto}"…`);
+    try {
+      const p = new URLSearchParams({
+        SingleLine: texto,
+        f: "json",
+        outSR: "4326",
+        maxLocations: "1",
+        countryCode: "ECU",
+        searchExtent: DMQ_EXTENT,
+      });
+      if (magicKey) p.set("magicKey", magicKey);
+      const r = await fetch(`${GEOCODER}/findAddressCandidates?${p}`);
+      const d = await r.json();
+      const c = (d.candidates || [])[0];
+      if (!c) {
+        setStatus(`No se encontró "${texto}"`, "err");
+        return;
+      }
+      const lat = c.location.y;
+      const lng = c.location.x;
+      if (dirInput) dirInput.value = c.address || texto;
+
+      if (mapa) {
+        mapa.setView([lat, lng], 18);
+        if (marcador) mapa.removeLayer(marcador);
+        const L = (window as any).L;
+        marcador = L.circleMarker([lat, lng], {
+          radius: 7,
+          color: "#05121f",
+          weight: 2,
+          fillColor: "#4fd1c5",
+          fillOpacity: 1,
+        }).addTo(mapa);
+      }
+      setStatus(`${c.address || texto} · haz clic en el mapa sobre un predio para verlo.`, "ok");
+    } catch (e) {
+      setStatus("Error del geocoder: " + (e as Error).message, "err");
+    }
+  }
+
+  async function identificar(lat: number, lng: number) {
+    setStatus("Identificando predio…");
+    if (resultBox) resultBox.hidden = true;
+
+    const base = {
+      geometryType: "esriGeometryPoint",
+      inSR: "4326",
+      spatialRel: "esriSpatialRelIntersects",
+      outFields: CAMPOS.join(","),
+      returnGeometry: "true",
+      outSR: "4326",
+      f: "json",
+    };
+
+    async function pedir(extra: Record<string, string>) {
+      const p = new URLSearchParams(
+        Object.assign({}, base, extra, { geometry: JSON.stringify({ x: lng, y: lat }) })
+      );
+      const r = await fetch(`${BASE}/${CATASTRO}/MapServer/${CAPA}/query?${p}`);
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message);
+      return d.features || [];
+    }
+
+    try {
+      let feats: any[] = [];
+      for (const d of [null, 5, 20, 60]) {
+        feats = d === null ? await pedir({}) : await pedir({ distance: String(d), units: "esriSRUnit_Meter" });
+        if (feats.length) break;
+      }
+      if (!feats.length) {
+        setStatus(`Sin predio en (${lat.toFixed(6)}, ${lng.toFixed(6)})`, "err");
+        return;
+      }
+
+      const f = feats[0];
+      const a = f.attributes;
+
+      const L = (window as any).L;
+      if (mapa) {
+        if (capaPredio) mapa.removeLayer(capaPredio);
+        if (f.geometry && f.geometry.rings) {
+          const pts = f.geometry.rings[0].map((p: number[]) => [p[1], p[0]]);
+          capaPredio = L.polygon(pts, { color: "#4fd1c5", weight: 2, fillOpacity: 0.15 }).addTo(mapa);
+        }
+      }
+
+      if (resultBox) {
+        resultBox.textContent = "";
+        const table = document.createElement("dl");
+        table.className = "geo-result-table";
+        for (const campo of CAMPOS) {
+          const dt = document.createElement("dt");
+          dt.textContent = ETIQUETAS[campo] || campo;
+          const dd = document.createElement("dd");
+          dd.textContent = String(a[campo] ?? "—");
+          table.appendChild(dt);
+          table.appendChild(dd);
+        }
+        resultBox.appendChild(table);
+        resultBox.hidden = false;
+        resultBox.classList.remove("invalido");
+        resultBox.classList.add("valido");
+      }
+
+      setStatus(`Predio ${a.predio ?? "—"} identificado.`, "ok");
+    } catch (e) {
+      setStatus("Error: " + (e as Error).message, "err");
+    }
+  }
+
+  function initMapa() {
+    const L = (window as any).L;
+    if (!L || mapa) return;
+    mapa = L.map("geo-map", { attributionControl: false }).setView([-0.1807, -78.4678], 12);
+    L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19,
+    }).addTo(mapa);
+    mapa.on("click", (ev: any) => identificar(ev.latlng.lat, ev.latlng.lng));
+  }
+
+  dirInput?.addEventListener("input", () => {
+    const texto = dirInput.value.trim();
+    clearTimeout(dirTimer);
+    if (texto.length < 3) {
+      ocultarSugerencias();
+      return;
+    }
+    dirTimer = setTimeout(() => sugerirDireccion(texto), 300);
+  });
+
+  sugerenciasBox?.addEventListener("click", (ev) => {
+    const el = (ev.target as HTMLElement).closest<HTMLElement>(".geo-sug");
+    if (!el) return;
+    const i = Number(el.dataset.i);
+    const s = sugerencias[i];
+    if (s) irADireccion(s.text, s.magicKey);
+  });
+
+  dirInput?.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") {
+      ev.preventDefault();
+      const texto = dirInput.value.trim();
+      if (texto) irADireccion(texto);
+    }
+  });
+
+  // Leaflet se carga vía CDN (ver <script> al final del componente).
+  // Si ya está disponible, inicializa de inmediato; si no, espera su carga.
+  if ((window as any).L) {
+    initMapa();
+  } else {
+    window.addEventListener("leaflet-loaded", initMapa, { once: true });
+  }
+</script>
+
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
+  crossorigin="anonymous"
+  is:inline
+  onload="window.dispatchEvent(new Event('leaflet-loaded'))"></script>
+
+<style>
+.geo-field {
+  position: relative;
+  max-width: 400px;
+  margin-bottom: var(--space-2);
+}
+.geo-field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.3rem;
+}
+.geo-field input {
+  width: 100%;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.6rem;
+  font-family: var(--font-sans);
+}
+.geo-field input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+.geo-sugerencias {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.geo-sug {
+  padding: 0.5rem 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.geo-sug:hover {
+  background: var(--color-bg);
+  color: var(--color-accent);
+}
+.geo-status {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  min-height: 1.2rem;
+  margin-bottom: var(--space-1);
+}
+.geo-status.ok { color: var(--color-accent); }
+.geo-status.err { color: var(--color-error); }
+.geo-map {
+  height: 360px;
+  width: 100%;
+  max-width: 700px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+.geo-result-table {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem var(--space-2);
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.geo-result-table dt { color: var(--color-text-muted); }
+.geo-result-table dd { margin: 0; }
+</style>

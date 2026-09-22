@@ -4,6 +4,7 @@ import docentraImage from "../assets/images/projects/docentra.png";
 import wordygoImage from "../assets/images/projects/wordygo.png";
 import jonezerImage from "../assets/images/projects/jonezer.jpeg";
 import disnomiaImage from "../assets/images/projects/disnomia.png";
+import geoquitoImage from "../assets/images/projects/geoquito.png";
 
 export interface Project {
   name: string;
@@ -51,5 +52,13 @@ export const projects: Project[] = [
     role: "Motor de evaluación",
     stack: ["NestJS"],
     image: disnomiaImage,
+  },
+  {
+    name: "Sistema GeoQuito",
+    description:
+      "Visor geográfico predial mejorado sobre el geoportal municipal: mejores rutas, más información por predio y consulta interactiva.",
+    role: "Autoría completa",
+    stack: ["Python", "Leaflet", "ArcGIS REST API"],
+    image: geoquitoImage,
   },
 ];
