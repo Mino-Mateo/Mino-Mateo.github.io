@@ -10,16 +10,16 @@ const links = [
 ---
 <header class="nav">
   <div class="container nav-inner">
-    <a href="#home" class="nav-logo">MATEO MIÑO</a>
-    <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+    <a href="#home" class="nav-logo">Mateo Miño</a>
+    <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
       <span></span>
       <span></span>
       <span></span>
     </button>
-    <nav>
-      <ul class="nav-links">
+    <nav aria-label="Principal">
+      <ul class="nav-links" id="nav-links">
         {links.map((link) => (
-          <li><a href={link.href}>{link.label}</a></li>
+          <li><a href={link.href} data-label={link.label}>{link.label}</a></li>
         ))}
       </ul>
     </nav>
@@ -30,110 +30,176 @@ const links = [
   const toggle = document.querySelector<HTMLButtonElement>(".nav-toggle");
   const links = document.querySelector<HTMLUListElement>(".nav-links");
 
-  toggle?.addEventListener("click", () => {
-    const isOpen = links?.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", String(Boolean(isOpen)));
-  });
+  function setOpen(open: boolean) {
+    links?.classList.toggle("open", open);
+    toggle?.setAttribute("aria-expanded", String(open));
+  }
+
+  toggle?.addEventListener("click", () => setOpen(!links?.classList.contains("open")));
 
   links?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      links.classList.remove("open");
-      toggle?.setAttribute("aria-expanded", "false");
-    });
+    link.addEventListener("click", () => setOpen(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || !links?.classList.contains("open")) return;
+    setOpen(false);
+    toggle?.focus();
   });
 
   const navLinks = document.querySelectorAll<HTMLAnchorElement>(".nav-links a");
-  const sections = Array.from(navLinks)
-    .map((link) => document.querySelector(link.getAttribute("href") || ""))
-    .filter((el): el is HTMLElement => el !== null);
+  // Incluye #home (sin link) para que no quede nada activo en el hero
+  const sections = Array.from(document.querySelectorAll<HTMLElement>("main section[id]"));
+  let ticking = false;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const id = `#${entry.target.id}`;
-        navLinks.forEach((link) => {
-          link.classList.toggle("active", link.getAttribute("href") === id);
-        });
-      });
+  // Sección actual: la última cuyo borde superior pasó el 40% del viewport.
+  // Las secciones cortas (y las finales, que no pueden subir más) quedan tapadas por la
+  // siguiente: tras un clic en el nav gana la del hash mientras su borde siga arriba en
+  // pantalla. Al fondo de la página sin hash visible, gana la última.
+  function updateActive() {
+    ticking = false;
+    const atBottom = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+    const target = sections.find((s) => `#${s.id}` === location.hash);
+    const targetTop = target ? target.getBoundingClientRect().top : -1;
+    const current =
+      targetTop >= 0 && (targetTop <= innerHeight * 0.4 || atBottom)
+        ? target
+        : atBottom
+          ? sections[sections.length - 1]
+          : sections.filter((s) => s.getBoundingClientRect().top <= innerHeight * 0.4).pop();
+    navLinks.forEach((link) => {
+      if (current && link.getAttribute("href") === `#${current.id}`) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+  }
+
+  addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(updateActive);
     },
-    { rootMargin: "-40% 0px -50% 0px" }
+    { passive: true }
   );
-
-  sections.forEach((section) => observer.observe(section));
+  updateActive();
 </script>
 
 <style>
 .nav {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: rgba(10, 14, 20, 0.9);
-  backdrop-filter: blur(6px);
+  z-index: var(--z-nav);
+  /* 90%: mantiene el link activo sobre 4.5:1 aunque pasen capturas claras por detrás */
+  background: color-mix(in srgb, var(--color-bg) 90%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
 }
 .nav-inner {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
+  gap: var(--space-3);
+  min-height: 4rem;
 }
 .nav-logo {
-  font-family: var(--font-mono);
-  color: var(--color-text) !important;
-  font-size: 0.9rem;
-  letter-spacing: 0.1em;
-  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
+.nav-logo:hover { text-decoration: none; }
 .nav-links {
   list-style: none;
   display: flex;
-  gap: var(--space-3);
+  gap: clamp(1rem, 2vw, 1.5rem);
   margin: 0;
   padding: 0;
 }
 .nav-links a {
-  color: var(--color-text-muted) !important;
-  font-size: 0.9rem;
-  text-decoration: none !important;
+  display: inline-flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  transition: color var(--dur) ease-out;
 }
-.nav-links a:hover,
-.nav-links a.active { color: var(--color-accent) !important; }
+/* Reserva el ancho del peso 500 para que el item activo no desplace a los demás */
+.nav-links a::after {
+  content: attr(data-label);
+  font-weight: 500;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+.nav-links a:hover { color: var(--color-text); text-decoration: none; }
+.nav-links a[aria-current] {
+  color: var(--color-accent);
+  font-weight: 500;
+  box-shadow: inset 0 -2px 0 var(--color-accent);
+}
 
 .nav-toggle {
   display: none;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 5px;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  margin-right: -10px;
+  padding: 0;
   background: none;
   border: none;
+  border-radius: var(--radius);
+  color: var(--color-text);
   cursor: pointer;
-  padding: 0;
 }
 .nav-toggle span {
   display: block;
-  width: 100%;
+  width: 22px;
   height: 2px;
-  background: var(--color-text);
+  background: currentColor;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
+  .nav-inner { gap: 0; }
   .nav-toggle { display: flex; }
   .nav-links {
     display: none;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: 0;
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
     background: var(--color-bg);
     border-bottom: 1px solid var(--color-border);
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-1) var(--space-3) var(--space-2);
   }
   .nav-links.open { display: flex; }
-  .nav-inner { position: relative; }
+  .nav-links a { display: flex; }
+  .nav-links a[aria-current] {
+    box-shadow: inset 2px 0 0 var(--color-accent);
+    padding-left: var(--space-2);
+  }
+}
+
+/* Alto contraste: el modo forzado borra fondos y sombras, que son la hamburguesa y el indicador activo */
+@media (forced-colors: active) {
+  .nav-toggle span {
+    forced-color-adjust: none;
+    background: ButtonText;
+  }
+  .nav-links a[aria-current] { text-decoration: underline; }
 }
 </style>

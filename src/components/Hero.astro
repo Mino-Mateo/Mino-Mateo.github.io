@@ -3,67 +3,116 @@ import { Image } from "astro:assets";
 import profilePhoto from "../assets/images/mateo-mino.jpg";
 ---
 <section id="home" class="hero">
-  <div class="hero-grid-bg"></div>
   <div class="container hero-content">
-    <Image
-      class="hero-photo"
-      src={profilePhoto}
-      alt="Foto de Mateo Miño"
-      width={280}
-      height={280}
-    />
     <div class="hero-text">
-      <p class="section-title">Ciberseguridad · Inteligencia · OSINT</p>
-      <h1>Mateo Miño</h1>
+      <p class="hero-badge">
+        <span class="hero-badge-icon" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        </span>
+        Ciberseguridad · Inteligencia · OSINT
+      </p>
+      <h1 class="hero-title">Mateo Miño</h1>
       <p class="hero-bio">
         Tech Lead & Seguridad Digital. Diseño y construyo herramientas de
         inteligencia, investigación e infraestructura segura.
       </p>
       <div class="hero-links">
-        <a class="btn" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">GitHub</a>
-        <a class="btn btn-outline" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn btn-ghost" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">
+          GitHub
+          <span class="btn-arrow" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          </span>
+        </a>
+        <a class="btn btn-ghost" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
       </div>
+    </div>
+    <div class="hero-visual">
+      <Image
+        class="hero-photo"
+        src={profilePhoto}
+        alt="Foto de Mateo Miño"
+        width={320}
+        height={320}
+        widths={[160, 320, 640]}
+        sizes="(min-width: 768px) 320px, 160px"
+        loading="eager"
+        fetchpriority="high"
+      />
     </div>
   </div>
 </section>
 
 <style>
 .hero {
-  position: relative;
-  padding: var(--space-8) 0;
-  overflow: hidden;
+  padding: var(--section-gap) 0;
   border-bottom: 1px solid var(--color-border);
-  scroll-margin-top: 5rem;
-}
-.hero-grid-bg {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--color-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
-  background-size: 40px 40px;
-  opacity: 0.05;
-  pointer-events: none;
+  background:
+    radial-gradient(40% 60% at 80% 45%, color-mix(in srgb, var(--color-purple) 28%, transparent), transparent 70%),
+    radial-gradient(30% 40% at 10% 90%, color-mix(in srgb, var(--color-pink) 8%, transparent), transparent 70%);
 }
 .hero-content {
-  position: relative;
-  display: flex;
-  align-items: center;
+  display: grid;
   gap: var(--space-4);
-  flex-wrap: wrap;
+  align-items: center;
 }
-.hero-photo {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border: 1px solid var(--color-border);
+.hero-visual { order: -1; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0 0 var(--space-3);
+  padding: 0.25rem 0.875rem 0.25rem 0.25rem;
+  border: 1px solid var(--color-border-accent);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.hero-badge-icon {
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--gradient-accent);
+  color: var(--color-bg);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 60%, transparent);
 }
-.hero-text { flex: 1; min-width: 260px; }
-.hero-bio {
-  max-width: 560px;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-3);
+.hero-title {
+  width: fit-content;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  background: linear-gradient(100deg, #fff 35%, var(--color-pink) 70%, var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
+.hero-bio { margin: 0 0 var(--space-4); }
 .hero-links { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.hero-photo {
+  display: block;
+  width: 160px;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid var(--color-border-accent);
+  border-radius: var(--radius);
+}
+
+/* Solo CSS (sin esperar al JS) y sin animar la foto: es el elemento LCP */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-text { animation: reveal 420ms ease-out backwards; }
+}
+
+@media (min-width: 768px) {
+  .hero-content { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  .hero-visual { order: 0; justify-self: end; }
+  .hero-photo { width: min(320px, 100%); }
+}
 </style>

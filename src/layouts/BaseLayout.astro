@@ -1,12 +1,31 @@
 ---
+import { getImage } from 'astro:assets';
 import Nav from '../components/Nav.astro';
 import '../styles/global.css';
+import profilePhoto from '../assets/images/mateo-mino.jpg';
 
 interface Props {
   title: string;
   description: string;
 }
 const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogPhoto = await getImage({ src: profilePhoto, width: 600, format: 'jpg' });
+const ogImage = new URL(ogPhoto.src, Astro.site).href;
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Mateo Miño',
+  jobTitle: 'Tech Lead & Seguridad Digital',
+  url: canonical,
+  image: ogImage,
+  worksFor: { '@type': 'Organization', name: 'eCondor Digital', url: 'https://econdordigital.org/' },
+  sameAs: [
+    'https://github.com/Mino-Mateo',
+    'https://www.linkedin.com/in/mateo-miño/',
+    'https://www.youtube.com/@mateomino-vc4hl',
+  ],
+};
 ---
 <!DOCTYPE html>
 <html lang="es">
@@ -15,16 +34,36 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <meta name="author" content="Mateo Miño" />
+    <meta name="theme-color" content="#010101" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_EC" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
     <title>{title}</title>
   </head>
   <body>
+    <a class="skip-link" href="#main">Saltar al contenido</a>
     <Nav />
     <slot />
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+    </script>
   </body>
 </html>

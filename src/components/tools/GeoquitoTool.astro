@@ -6,33 +6,46 @@
   integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
   crossorigin="anonymous"
 />
-<div class="tool-card">
-  <h3>Consulta predial GeoQuito</h3>
-  <p class="tool-desc">
-    Escribe una calle de Quito, haz clic en el mapa y mira la información
-    básica del predio en ese punto — usando la API pública y abierta del
-    geoportal municipal (sin autenticación). Versión reducida: el sistema
-    completo también permite buscar por cédula, propietario, valoración y
-    generar reportes, pero eso se queda fuera de este demo público.
-  </p>
-  <a
-    class="btn btn-outline tool-repo-link"
-    href="https://github.com/Mino-Mateo/Sistema-Geoquito"
-    target="_blank"
-    rel="noopener"
-  >
-    Ver código en GitHub
-  </a>
-
-  <div class="geo-field">
-    <label for="geo-dir">Calle o dirección</label>
-    <input id="geo-dir" type="text" autocomplete="off" placeholder="Ej: Av. Amazonas y Naciones Unidas" />
-    <div id="geo-sugerencias" class="geo-sugerencias" hidden></div>
+<div class="card tool-card tool-card-reverse" data-reveal>
+  <div class="tool-info">
+    <h3>Consulta predial GeoQuito</h3>
+    <p class="tool-desc">
+      Escribe una calle de Quito, haz clic en el mapa (o usa el botón para
+      identificar el predio en el centro) y mira la información básica del
+      predio en ese punto — usando la API pública y abierta del
+      geoportal municipal (sin autenticación). Versión reducida: el sistema
+      completo también permite buscar por cédula, propietario, valoración y
+      generar reportes, pero eso se queda fuera de este demo público.
+    </p>
+    <a
+      class="btn btn-ghost"
+      href="https://github.com/Mino-Mateo/Sistema-Geoquito"
+      target="_blank"
+      rel="noopener"
+    >
+      Ver código en GitHub
+    </a>
   </div>
 
-  <div id="geo-status" class="geo-status"></div>
-  <div id="geo-map" class="geo-map"></div>
-  <div id="geo-result" class="tool-result" hidden></div>
+  <div class="tool-demo">
+    <div class="tool-field geo-field">
+      <label for="geo-dir">Calle o dirección</label>
+      <input id="geo-dir" type="text" autocomplete="off" placeholder="Ej: Av. Amazonas y Naciones Unidas" />
+      <div id="geo-sugerencias" class="geo-sugerencias" hidden></div>
+    </div>
+
+    <div id="geo-status" class="geo-status" role="status"></div>
+    <div
+      id="geo-map"
+      class="geo-map"
+      role="region"
+      aria-label="Mapa de Quito: flechas para moverlo, + y - para acercar o alejar"
+    ></div>
+    <button type="button" id="geo-centro" class="btn btn-ghost geo-centro">
+      Identificar predio en el centro del mapa
+    </button>
+    <div id="geo-result" class="tool-result" hidden></div>
+  </div>
 </div>
 
 <script>
@@ -53,12 +66,17 @@
     estado: "Estado",
   };
 
+  const tokens = getComputedStyle(document.documentElement);
+  const ACCENT = tokens.getPropertyValue("--color-accent").trim();
+  const BG = tokens.getPropertyValue("--color-bg").trim();
+
   let mapa: any = null;
   let marcador: any = null;
   let capaPredio: any = null;
   let sugerencias: Array<{ text: string; magicKey?: string }> = [];
   let dirTimer: ReturnType<typeof setTimeout> | undefined;
 
+  const geoField = document.querySelector<HTMLDivElement>(".geo-field");
   const dirInput = document.querySelector<HTMLInputElement>("#geo-dir");
   const sugerenciasBox = document.querySelector<HTMLDivElement>("#geo-sugerencias");
   const statusEl = document.querySelector<HTMLDivElement>("#geo-status");
@@ -87,11 +105,12 @@
       return;
     }
     lista.forEach((s, i) => {
-      const div = document.createElement("div");
-      div.className = "geo-sug";
-      div.textContent = s.text;
-      div.dataset.i = String(i);
-      sugerenciasBox.appendChild(div);
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "geo-sug";
+      btn.textContent = s.text;
+      btn.dataset.i = String(i);
+      sugerenciasBox.appendChild(btn);
     });
     sugerenciasBox.hidden = false;
   }
@@ -107,7 +126,8 @@
       });
       const r = await fetch(`${GEOCODER}/suggest?${p}`);
       const d = await r.json();
-      if (dirInput?.value.trim() !== texto) return;
+      // Respuesta tardía: no abrir la lista si el texto cambió o el foco ya salió del campo
+      if (dirInput?.value.trim() !== texto || !geoField?.contains(document.activeElement)) return;
       pintarSugerencias(d.suggestions || []);
     } catch {
       ocultarSugerencias();
@@ -144,9 +164,9 @@
         const L = (window as any).L;
         marcador = L.circleMarker([lat, lng], {
           radius: 7,
-          color: "#05121f",
+          color: BG,
           weight: 2,
-          fillColor: "#4fd1c5",
+          fillColor: ACCENT,
           fillOpacity: 1,
         }).addTo(mapa);
       }
@@ -199,7 +219,7 @@
         if (capaPredio) mapa.removeLayer(capaPredio);
         if (f.geometry && f.geometry.rings) {
           const pts = f.geometry.rings[0].map((p: number[]) => [p[1], p[0]]);
-          capaPredio = L.polygon(pts, { color: "#4fd1c5", weight: 2, fillOpacity: 0.15 }).addTo(mapa);
+          capaPredio = L.polygon(pts, { color: ACCENT, weight: 2, fillOpacity: 0.15 }).addTo(mapa);
         }
       }
 
@@ -230,9 +250,17 @@
   function initMapa() {
     const L = (window as any).L;
     if (!L || mapa) return;
-    mapa = L.map("geo-map", { attributionControl: false }).setView([-0.1807, -78.4678], 12);
+    mapa = L.map("geo-map", { scrollWheelZoom: false, zoomControl: false }).setView([-0.1807, -78.4678], 12);
+    L.control.zoom({ zoomInTitle: "Acercar", zoomOutTitle: "Alejar" }).addTo(mapa);
+    // La rueda hace zoom solo con el mapa enfocado (clic o Tab): si no, atrapa el scroll de la página
+    mapa.on("focus", () => mapa.scrollWheelZoom.enable());
+    mapa.on("blur", () => mapa.scrollWheelZoom.disable());
+    mapa.attributionControl.setPrefix(false);
     L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
       maxZoom: 19,
+      // Texto oficial del servicio (copyrightText) + "Powered by Esri" exigido por sus términos
+      attribution:
+        '<span lang="en">Powered by <a href="https://www.esri.com">Esri</a> | Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community</span> | Catastro: <a href="https://geoquito.quito.gob.ec">Municipio del DMQ</a> | <a href="https://leafletjs.com">Leaflet</a>',
     }).addTo(mapa);
     mapa.on("click", (ev: any) => identificar(ev.latlng.lat, ev.latlng.lng));
   }
@@ -252,7 +280,33 @@
     if (!el) return;
     const i = Number(el.dataset.i);
     const s = sugerencias[i];
-    if (s) irADireccion(s.text, s.magicKey);
+    // Devuelve el foco al input: el botón elegido desaparece al ocultar la lista
+    if (s) {
+      dirInput?.focus();
+      irADireccion(s.text, s.magicKey);
+    }
+  });
+
+  // La lista tapa el mapa y sus controles: se cierra al salir del campo o con Escape.
+  // mousedown sin default mantiene el foco en el input durante un clic en una sugerencia.
+  sugerenciasBox?.addEventListener("mousedown", (ev) => ev.preventDefault());
+  geoField?.addEventListener("focusout", (ev) => {
+    if (!geoField.contains(ev.relatedTarget as Node | null)) ocultarSugerencias();
+  });
+  geoField?.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Escape" || sugerenciasBox?.hidden) return;
+    ocultarSugerencias();
+    dirInput?.focus();
+  });
+
+  // Alternativa al clic: el mapa se mueve con teclado y esto identifica su centro
+  document.querySelector("#geo-centro")?.addEventListener("click", () => {
+    if (!mapa) {
+      setStatus("El mapa todavía no está disponible. Intenta de nuevo en unos segundos.", "err");
+      return;
+    }
+    const centro = mapa.getCenter();
+    identificar(centro.lat, centro.lng);
   });
 
   dirInput?.addEventListener("keydown", (ev) => {
@@ -277,78 +331,132 @@
   integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
   crossorigin="anonymous"
   is:inline
+  defer
   onload="window.dispatchEvent(new Event('leaflet-loaded'))"></script>
 
 <style>
 .geo-field {
   position: relative;
-  max-width: 400px;
   margin-bottom: var(--space-2);
-}
-.geo-field label {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  margin-bottom: 0.3rem;
-}
-.geo-field input {
-  width: 100%;
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-  padding: 0.6rem;
-  font-family: var(--font-sans);
-}
-.geo-field input:focus {
-  outline: none;
-  border-color: var(--color-accent);
 }
 .geo-sugerencias {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 5;
-  background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  border-top: none;
+  /* Local: sobre el mapa (aislado, z auto) y debajo del nav sticky (100) y su menú */
+  z-index: 1;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
   max-height: 200px;
   overflow-y: auto;
 }
-.geo-sug {
-  padding: 0.5rem 0.6rem;
-  font-size: 0.85rem;
+/* Los items y la tabla los crea el script: sin :global no reciben el atributo de scope */
+:global(.geo-sug) {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  color: var(--color-text);
+  background: none;
+  border: 0;
   cursor: pointer;
+  transition: background-color var(--dur) ease-out, color var(--dur) ease-out;
 }
-.geo-sug:hover {
-  background: var(--color-bg);
+:global(.geo-sug:hover),
+:global(.geo-sug:focus-visible) {
+  background: var(--color-hover);
   color: var(--color-accent);
 }
+:global(.geo-sug:focus-visible) { outline-offset: -2px; }
 .geo-status {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: var(--color-text-muted);
-  min-height: 1.2rem;
+  min-height: 1.25rem;
   margin-bottom: var(--space-1);
 }
 .geo-status.ok { color: var(--color-accent); }
 .geo-status.err { color: var(--color-error); }
 .geo-map {
+  /* Contiene los z-index internos de Leaflet (400-1000) para que no tapen el nav sticky */
+  isolation: isolate;
+  position: relative;
   height: 360px;
-  width: 100%;
-  max-width: 700px;
   border: 1px solid var(--color-border);
-  background: var(--color-bg-elevated);
+  border-radius: var(--radius);
+  background: var(--color-surface);
 }
-.geo-result-table {
+/* Retícula del centro: indica qué punto identifica el botón */
+.geo-map::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 450;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--color-bg);
+  pointer-events: none;
+}
+/* Atribución en una línea que se expande con hover o foco (patrón de esri-leaflet) */
+.geo-map :global(.leaflet-bottom.leaflet-right) { left: 0; }
+.geo-map :global(.leaflet-control-attribution) {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: color-mix(in srgb, var(--color-bg) 85%, transparent);
+  color: var(--color-text);
+  font-size: 0.75rem;
+}
+.geo-map :global(.leaflet-control-attribution:hover),
+.geo-map :global(.leaflet-control-attribution:focus-within) { white-space: normal; }
+/* Espacio para el anillo de foco de los links, que overflow:hidden recortaría */
+.geo-map :global(.leaflet-control-attribution:focus-within) { padding-block: 4px; }
+.geo-map :global(.leaflet-control-attribution a) { color: var(--color-accent); }
+/* Zoom de Leaflet con los tokens (por defecto: blanco puro, 30px, radio 4px) */
+.geo-map :global(.leaflet-bar) {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.geo-map :global(.leaflet-bar a) {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-bottom-color: var(--color-border-strong);
+  transition: background-color var(--dur) ease-out, color var(--dur) ease-out;
+}
+.geo-map :global(.leaflet-bar a:not(.leaflet-disabled):hover) {
+  background: #1c1b24;
+  color: var(--color-accent);
+}
+/* En zoom mínimo/máximo Leaflet deshabilita el botón: que se note */
+.geo-map :global(.leaflet-bar a.leaflet-disabled) {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  cursor: default;
+}
+/* Anillo dentro del botón: por fuera se pierde sobre la imagen satelital */
+.geo-map :global(.leaflet-bar a:focus-visible) { outline-offset: -4px; }
+.geo-centro { margin-top: var(--space-2); }
+:global(.geo-result-table) {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.3rem var(--space-2);
+  gap: 0.25rem var(--space-2);
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
 }
-.geo-result-table dt { color: var(--color-text-muted); }
-.geo-result-table dd { margin: 0; }
+:global(.geo-result-table dt) { color: var(--color-text-muted); }
+:global(.geo-result-table dd) { margin: 0; }
 </style>

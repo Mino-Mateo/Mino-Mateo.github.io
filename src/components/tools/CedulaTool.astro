@@ -1,36 +1,40 @@
 ---
 import { paises } from "../../lib/validators";
 ---
-<div class="tool-card">
-  <h3>Verificador de identificación</h3>
-  <p class="tool-desc">
-    Verificador de números de identificación por país. El cálculo corre
-    100% en tu navegador — no se guarda ni se envía ningún dato.
-  </p>
-  <a
-    class="btn btn-outline tool-repo-link"
-    href="https://github.com/Mino-Mateo/Verificador-de-C-dula"
-    target="_blank"
-    rel="noopener"
-  >
-    Ver código en GitHub
-  </a>
+<div class="card tool-card" data-reveal>
+  <div class="tool-info">
+    <h3>Verificador de identificación</h3>
+    <p class="tool-desc">
+      Verificador de números de identificación por país. El cálculo corre
+      100% en tu navegador — no se guarda ni se envía ningún dato.
+    </p>
+    <a
+      class="btn btn-ghost"
+      href="https://github.com/Mino-Mateo/Verificador-de-C-dula"
+      target="_blank"
+      rel="noopener"
+    >
+      Ver código en GitHub
+    </a>
+  </div>
 
-  <form class="tool-form" id="cedula-form">
-    <div class="tool-field">
-      <label for="cedula-pais">País / documento</label>
-      <select id="cedula-pais" name="pais">
-        {paises.map((p) => <option value={p.id}>{p.nombre}</option>)}
-      </select>
-    </div>
-    <div class="tool-field">
-      <label for="cedula-valor">Número</label>
-      <input id="cedula-valor" name="valor" type="text" autocomplete="off" />
-    </div>
-    <button type="submit" class="btn">Verificar</button>
-  </form>
+  <div class="tool-demo">
+    <form class="tool-form" id="cedula-form">
+      <div class="tool-field">
+        <label for="cedula-pais">País / documento</label>
+        <select id="cedula-pais" name="pais">
+          {paises.map((p) => <option value={p.id}>{p.nombre}</option>)}
+        </select>
+      </div>
+      <div class="tool-field">
+        <label for="cedula-valor">Número</label>
+        <input id="cedula-valor" name="valor" type="text" autocomplete="off" />
+      </div>
+      <button type="submit" class="btn btn-primary">Verificar</button>
+    </form>
 
-  <div id="cedula-result" class="tool-result" hidden></div>
+    <div id="cedula-result" class="tool-result" role="status"></div>
+  </div>
 </div>
 
 <script>
@@ -56,7 +60,6 @@ import { paises } from "../../lib/validators";
 
     const resultado = pais.validar(valorInput.value);
 
-    resultBox.hidden = false;
     resultBox.textContent = resultado.mensaje;
     resultBox.classList.toggle("valido", resultado.valido);
     resultBox.classList.toggle("invalido", !resultado.valido);

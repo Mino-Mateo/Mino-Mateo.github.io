@@ -12,6 +12,8 @@ export interface Project {
   role: string;
   stack: string[];
   image: ImageMetadata;
+  /** object-position de la captura en la card (por defecto "top") */
+  imagePosition?: string;
 }
 
 export const projects: Project[] = [
@@ -45,6 +47,8 @@ export const projects: Project[] = [
     role: "Funcionalidades de cálculo y roles",
     stack: ["Flutter"],
     image: jonezerImage,
+    // Captura vertical: centra el saludo y la card principal en el recorte 2:1
+    imagePosition: "center 22%",
   },
   {
     name: "Disnomia",
