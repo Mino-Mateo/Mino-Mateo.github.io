@@ -1,13 +1,194 @@
 ---
+const experiencia = [
+  {
+    cargo: "Cofundador y Tech Lead",
+    org: "eCondor Digital",
+    inicio: { dt: "2026", txt: "2026" },
+    fin: "actualidad",
+    logros: [
+      "Dirección técnica y de seguridad de productos web y móviles a medida.",
+      "Proyectos: Intellify, Docentra, WordyGo, Disnomia, Jonezer App y Sistema GeoQuito.",
+      "Arquitectura de soluciones escalables con enfoque en protección digital.",
+    ],
+  },
+  {
+    cargo: "Investigador OSINT / Analista Digital",
+    org: "Independiente",
+    inicio: { dt: "2024-08", txt: "ago 2024" },
+    fin: "actualidad",
+    logros: [
+      "Fuga de datos con 1.780 registros sensibles identificada, reportada y mitigada.",
+      "Verificación e identificación de personas por correlación de fuentes abiertas, con evidencia verificable para procesos legales.",
+      "Investigaciones transfronterizas basadas en fuentes abiertas y marcos legales.",
+      "Detección de endpoints, paneles y configuraciones expuestas en sistemas públicos.",
+      "Recolección, correlación y documentación de evidencia digital con trazabilidad.",
+    ],
+  },
+  {
+    cargo: "Asistente Técnico",
+    org: "EcuadorPC",
+    inicio: { dt: "2024-02", txt: "feb 2024" },
+    fin: { dt: "2025-02", txt: "feb 2025" },
+    logros: [
+      "Soporte técnico e incidentes críticos (malware, fallos de sistema) resueltos sin pérdida de datos.",
+      "Documentación de procedimientos que redujo los errores operativos un 25%.",
+    ],
+  },
+  {
+    cargo: "Desarrollador de software (soporte a investigación digital)",
+    org: "Independiente",
+    inicio: { dt: "2024-01", txt: "ene 2024" },
+    fin: { dt: "2025-02", txt: "feb 2025" },
+    logros: [
+      "Herramientas internas en Java para gestión y validación de datos.",
+      "Sistemas CRUD con control de roles y auditoría.",
+      "Mensajería cliente-servidor con cifrado básico.",
+    ],
+  },
+];
+
+const formacion = [
+  "EPN: Sistemas de Seguridad (2023)",
+  "EPN: Protección de Datos, DIGIP (2023)",
+  "USFQ: Física y Sistemas Cuánticos (2019)",
+];
+
+const idiomas = ["Español: nativo", "Inglés: intermedio", "Italiano: básico"];
+
+const stack = [
+  { grupo: "Lenguajes y entorno", items: ["Linux", "Bash", "Python", "Java", "JavaScript", "SQL", "HTML"] },
+  { grupo: "Datos", items: ["PostgreSQL", "MySQL", "MongoDB", "Supabase"] },
+  { grupo: "Web y móvil", items: ["React", "NestJS", "Bun", ".NET", "Flutter", "Leaflet", "ArcGIS REST API"] },
+];
 ---
 <section id="about" class="section">
-  <div class="container" data-reveal>
-    <h2 class="section-title"><span class="section-index" aria-hidden="true">05</span>Trayectoria</h2>
-    <p>
-      Me dedico a la ciberseguridad y la inteligencia digital. Diseño
-      herramientas de investigación (OSINT), arquitecturas seguras y
-      sistemas de indexación de información. Actualmente lidero la parte
-      técnica y de seguridad en eCondor Digital.
-    </p>
+  <div class="container">
+    <div data-reveal>
+      <h2 class="section-title"><span class="section-index" aria-hidden="true">05</span>Trayectoria</h2>
+      <p class="about-profile">
+        Investigador OSINT y de ciberinteligencia, y Tech Lead en seguridad digital. Me dedico a
+        identificar, verificar y correlacionar información de fuentes abiertas para
+        investigaciones, evaluación de riesgos y toma de decisiones, siempre con trazabilidad de
+        la evidencia.
+      </p>
+    </div>
+
+    <div class="about-grid">
+      <div>
+        <h3 class="about-subtitle" data-reveal>Experiencia</h3>
+        <ol class="timeline" role="list">
+          {experiencia.map((e) => (
+            <li class="experience-item" data-reveal>
+              <h4>{e.cargo}</h4>
+              <p class="experience-company">
+                {e.org} · <time datetime={e.inicio.dt}>{e.inicio.txt}</time> - {typeof e.fin === "string" ? e.fin : <time datetime={e.fin.dt}>{e.fin.txt}</time>}
+              </p>
+              <ul>
+                {e.logros.map((l) => <li>{l}</li>)}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="about-side">
+        <div data-reveal>
+          <h3 class="about-subtitle">Formación</h3>
+          <p class="about-degree">
+            Tecnólogo Superior en Desarrollo de Software, Escuela Politécnica Nacional
+            (<time datetime="2025-05">mayo 2025</time>).
+          </p>
+          <ul class="about-list">
+            {formacion.map((f) => <li>{f}</li>)}
+          </ul>
+        </div>
+        <div data-reveal>
+          <h3 class="about-subtitle">Idiomas</h3>
+          <ul class="about-list">
+            {idiomas.map((i) => <li>{i}</li>)}
+          </ul>
+        </div>
+        <div data-reveal>
+          <h3 class="about-subtitle">Stack de desarrollo</h3>
+          <dl class="about-stack">
+            {stack.map((g) => (
+              <div>
+                <dt>{g.grupo}</dt>
+                <dd>{g.items.map((t) => <span class="tag">{t}</span>)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+.about-profile { margin: 0 0 var(--space-4); }
+.about-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.about-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.experience-item {
+  border-left: 2px solid var(--color-accent);
+  padding-left: var(--space-3);
+}
+.experience-item h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+.experience-company {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  margin: 0 0 var(--space-1);
+}
+.experience-item ul { list-style: disc; }
+.experience-item ul,
+.about-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+.experience-item li + li,
+.about-list li + li { margin-top: 0.25rem; }
+.experience-item li::marker,
+.about-list li::marker { color: var(--color-accent); }
+.about-side {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.about-degree { font-size: 0.875rem; margin: 0 0 var(--space-1); }
+.about-stack { display: grid; gap: var(--space-2); margin: 0; }
+.about-stack dt {
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.about-stack dd { display: flex; flex-wrap: wrap; gap: var(--space-1); margin: 0; }
+
+@media (min-width: 1024px) {
+  .about-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--space-6); }
+}
+</style>
