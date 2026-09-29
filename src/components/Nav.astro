@@ -1,4 +1,6 @@
 ---
+import { Menu, X } from "@lucide/astro";
+
 const links = [
   { href: "#about", label: "Sobre mí" },
   { href: "#experience", label: "Experiencia" },
@@ -11,10 +13,9 @@ const links = [
 <header class="nav">
   <div class="container nav-inner">
     <a href="#home" class="nav-logo">Mateo Miño</a>
-    <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
-      <span></span>
-      <span></span>
-      <span></span>
+    <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-links">
+      <Menu class="icon-open" />
+      <X class="icon-close" />
     </button>
     <nav aria-label="Principal">
       <ul class="nav-links" id="nav-links">
@@ -149,10 +150,8 @@ const links = [
 
 .nav-toggle {
   display: none;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5px;
   width: 44px;
   height: 44px;
   margin-left: auto;
@@ -164,12 +163,10 @@ const links = [
   color: var(--color-text);
   cursor: pointer;
 }
-.nav-toggle span {
-  display: block;
-  width: 22px;
-  height: 2px;
-  background: currentColor;
-}
+/* Los SVG vienen de @lucide/astro: sin :global no reciben el atributo de scope */
+.nav-toggle :global(.icon-close),
+.nav-toggle[aria-expanded="true"] :global(.icon-open) { display: none; }
+.nav-toggle[aria-expanded="true"] :global(.icon-close) { display: block; }
 
 @media (max-width: 767px) {
   .nav-inner { gap: 0; }
@@ -194,12 +191,8 @@ const links = [
   }
 }
 
-/* Alto contraste: el modo forzado borra fondos y sombras, que son la hamburguesa y el indicador activo */
+/* Alto contraste: el modo forzado borra el box-shadow del indicador activo */
 @media (forced-colors: active) {
-  .nav-toggle span {
-    forced-color-adjust: none;
-    background: ButtonText;
-  }
   .nav-links a[aria-current] { text-decoration: underline; }
 }
 </style>

@@ -1,13 +1,14 @@
 ---
 import { Image } from "astro:assets";
+import { ArrowUpRight, Zap } from "@lucide/astro";
 import profilePhoto from "../assets/images/mateo-mino.jpg";
 ---
 <section id="home" class="hero">
   <div class="container hero-content">
     <div class="hero-text">
       <p class="hero-badge">
-        <span class="hero-badge-icon" aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+        <span class="hero-badge-icon">
+          <Zap size={14} fill="currentColor" />
         </span>
         Ciberseguridad · Inteligencia · OSINT
       </p>
@@ -19,8 +20,8 @@ import profilePhoto from "../assets/images/mateo-mino.jpg";
       <div class="hero-links">
         <a class="btn btn-ghost" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">
           GitHub
-          <span class="btn-arrow" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          <span class="btn-arrow">
+            <ArrowUpRight size={16} stroke-width={2.5} />
           </span>
         </a>
         <a class="btn btn-ghost" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>

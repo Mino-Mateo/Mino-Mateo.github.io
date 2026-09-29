@@ -1,4 +1,5 @@
 ---
+import { Crosshair } from "@lucide/astro";
 ---
 <link
   rel="stylesheet"
@@ -42,6 +43,7 @@
       aria-label="Mapa de Quito: flechas para moverlo, + y - para acercar o alejar"
     ></div>
     <button type="button" id="geo-centro" class="btn btn-ghost geo-centro">
+      <Crosshair size={18} />
       Identificar predio en el centro del mapa
     </button>
     <div id="geo-result" class="tool-result" hidden></div>
