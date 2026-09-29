@@ -1,26 +1,36 @@
 ---
 import ProjectCard from './ProjectCard.astro';
 import { projects } from '../data/projects';
+
+const grupos = [
+  { titulo: 'OSINT e inteligencia', area: 'osint' },
+  { titulo: 'Desarrollo', area: 'desarrollo' },
+] as const;
 ---
 <section id="projects" class="section">
   <div class="container">
     <h2 class="section-title" data-reveal><span class="section-index" aria-hidden="true">03</span>Proyectos</h2>
-    <div class="projects-grid">
-      {projects.map((project) => (
-        <ProjectCard
-          name={project.name}
-          description={project.description}
-          role={project.role}
-          stack={project.stack}
-          image={project.image}
-          imagePosition={project.imagePosition}
-        />
-      ))}
-    </div>
+    {grupos.map((g) => (
+      <Fragment>
+        <h3 class="projects-subtitle" data-reveal>{g.titulo}</h3>
+        <div class="projects-grid">
+          {projects.filter((p) => p.area === g.area).map((p) => <ProjectCard {...p} />)}
+        </div>
+      </Fragment>
+    ))}
   </div>
 </section>
 
 <style>
+.projects-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.projects-grid + .projects-subtitle { margin-top: var(--space-6); }
 .projects-grid {
   display: grid;
   gap: var(--space-3);
