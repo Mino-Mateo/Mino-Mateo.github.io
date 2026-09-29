@@ -50,14 +50,20 @@ import { Crosshair } from "@lucide/astro";
   const DMQ_EXTENT = "-78.947686,-0.590609,-78.165104,0.277314";
 
   // Campos deliberadamente limitados: sin cédula ni nombre de propietario,
-  // sin valores económicos — solo identificación básica del predio.
-  const CAMPOS = ["predio", "clavcatastral", "parroquia", "nomenclatura", "estado"];
+  // sin valores económicos: identificación básica y área física del predio.
+  // arterrlote (no arterrpredio, que en algunos predios viene inflado x100).
+  const CAMPOS = ["predio", "clavcatastral", "parroquia", "nomenclatura", "estado", "arterrlote"];
   const ETIQUETAS: Record<string, string> = {
     predio: "Predio",
     clavcatastral: "Clave catastral",
     parroquia: "Parroquia",
     nomenclatura: "Nomenclatura",
     estado: "Estado",
+    arterrlote: "Área del terreno",
+  };
+  const FORMATOS: Record<string, (v: unknown) => string> = {
+    arterrlote: (v) =>
+      typeof v === "number" ? `${v.toLocaleString("es-EC", { maximumFractionDigits: 2 })} m²` : "—",
   };
 
   const tokens = getComputedStyle(document.documentElement);
@@ -225,7 +231,7 @@ import { Crosshair } from "@lucide/astro";
           const dt = document.createElement("dt");
           dt.textContent = ETIQUETAS[campo] || campo;
           const dd = document.createElement("dd");
-          dd.textContent = String(a[campo] ?? "—");
+          dd.textContent = FORMATOS[campo]?.(a[campo]) ?? String(a[campo] ?? "—");
           table.appendChild(dt);
           table.appendChild(dd);
         }
