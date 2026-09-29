@@ -1,0 +1,243 @@
+---
+import { Check, FileCheck, Radar, ScanSearch, ShieldCheck } from "@lucide/astro";
+
+const pasos = [
+  {
+    icon: Radar,
+    titulo: "Reconocer",
+    texto: "Fuentes abiertas y superficie expuesta: dominios, subdominios, servicios publicados y versiones archivadas del objetivo.",
+  },
+  {
+    icon: ScanSearch,
+    titulo: "Escanear endpoints",
+    texto: "Fuzzing de rutas, parámetros y APIs para encontrar consultas que devuelven datos personales sin control de acceso.",
+    destacado: true,
+  },
+  {
+    icon: FileCheck,
+    titulo: "Verificar y reportar",
+    texto: "Cada hallazgo se reproduce y se documenta con evidencia trazable antes de reportarlo a quien puede corregirlo.",
+  },
+  {
+    icon: ShieldCheck,
+    titulo: "Acompañar la corrección",
+    texto: "Divulgación responsable: sigo el caso hasta que la exposición se cierra y solo entonces se cuenta.",
+  },
+];
+
+const estados = ["Detectada", "Verificada", "Reportada", "Mitigada"];
+
+const herramientas = [
+  { fase: "Reconocimiento", items: ["Shodan", "Censys", "Google Dorking", "theHarvester", "Recon-ng"] },
+  {
+    fase: "Endpoints y fuzzing",
+    items: ["Nmap", "Fuzzing de rutas, parámetros y APIs", "Paneles expuestos", "Herramientas propias asistidas por IA"],
+  },
+  { fase: "Correlación", items: ["SpiderFoot", "Maltego", "holehe"] },
+  { fase: "Fuentes", items: ["Wayback Machine", "WHOIS / RDAP", "OSINT Framework"] },
+];
+
+const principios = [
+  "Solo fuentes abiertas y métodos legales.",
+  "Evidencia trazable: cada dato con su origen y su fecha.",
+  "LOPDP y minimización: se recoge solo lo necesario para probar la exposición.",
+  "Ningún hallazgo se publica antes de su corrección.",
+];
+---
+<section id="osint" class="section">
+  <div class="container">
+    <div data-reveal>
+      <h2 class="section-title"><span class="section-index" aria-hidden="true">02</span>Investigación OSINT</h2>
+      <p class="osint-intro">
+        Busco lo que un sistema público deja ver sin querer: endpoints que responden sin
+        autenticación, consultas que devuelven datos personales y paneles olvidados. Trabajo
+        con instituciones, empresas y equipos legales que necesitan saber qué tienen expuesto
+        antes de que otro lo encuentre.
+      </p>
+    </div>
+
+    <div class="osint-layout">
+      <div>
+        <h3 class="osint-subtitle" data-reveal>Método</h3>
+        <ol class="osint-steps" role="list">
+          {pasos.map(({ icon: Icon, titulo, texto, destacado }, i) => (
+            <li class:list={["card", "osint-step", { "is-featured": destacado }]} data-reveal>
+              <span class="osint-step-num" aria-hidden="true">{`0${i + 1}`}</span>
+              <h4><Icon size={20} />{titulo}</h4>
+              <p>{texto}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="osint-results">
+        <h3 class="osint-subtitle" data-reveal>Resultados</h3>
+        <article class="card osint-result" data-reveal>
+          <h4><span class="osint-number">1.780</span> registros sensibles expuestos</h4>
+          <p>Fuga de datos en un sistema público, cerrada con divulgación responsable.</p>
+          <ol class="stepper" role="list" aria-label="Estado del hallazgo">
+            {estados.map((estado) => (
+              <li><Check size={16} /><span class="sr-only">Completado: </span>{estado}</li>
+            ))}
+          </ol>
+        </article>
+        <article class="card osint-result" data-reveal>
+          <h4>Divulgación responsable</h4>
+          <p>
+            Cada hallazgo se reporta primero, en privado, a quien puede corregirlo. Los detalles
+            solo se publican cuando la exposición está cerrada.
+          </p>
+        </article>
+        <ul class="osint-bullets" data-reveal>
+          <li>Detección de endpoints, paneles y configuraciones expuestas en sistemas públicos.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="osint-bottom">
+      <div data-reveal>
+        <h3 class="osint-subtitle">Principios</h3>
+        <ul class="osint-principles">
+          {principios.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+      <div data-reveal>
+        <h3 class="osint-subtitle">Herramientas por fase</h3>
+        <dl class="osint-tools">
+          {herramientas.map((g) => (
+            <div>
+              <dt>{g.fase}</dt>
+              <dd>{g.items.map((t) => <span class="tag">{t}</span>)}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.osint-intro { margin: 0 0 var(--space-4); }
+.osint-subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.osint-layout,
+.osint-bottom {
+  display: grid;
+  gap: var(--space-4);
+}
+.osint-bottom { margin-top: var(--space-6); }
+.osint-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.osint-step { padding: var(--space-3); }
+.osint-step > :last-child { margin-bottom: 0; }
+.osint-step.is-featured {
+  border-color: var(--color-border-accent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 60%),
+    var(--color-surface);
+}
+.osint-step-num {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+.osint-step h4,
+.osint-result h4 {
+  margin: 0 0 var(--space-1);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+.osint-step h4 { display: flex; align-items: center; gap: 0.5rem; }
+.osint-step h4 :global(svg) { flex-shrink: 0; color: var(--color-accent); }
+.osint-step p,
+.osint-result p { font-size: 0.875rem; }
+.osint-results {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+.osint-result { padding: var(--space-3); }
+.osint-result > :last-child { margin-bottom: 0; }
+.osint-number {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-accent);
+}
+.stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.stepper li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--color-border-accent);
+  border-radius: var(--radius);
+  color: var(--color-accent);
+  font: 500 0.75rem var(--font-mono);
+}
+.osint-bullets,
+.osint-principles {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+.osint-principles li + li { margin-top: 0.5rem; }
+.osint-bullets li::marker,
+.osint-principles li::marker { color: var(--color-accent); }
+.osint-tools {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+.osint-tools dt {
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.osint-tools dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+}
+.osint-steps > :nth-child(2) { --i: 1; }
+.osint-steps > :nth-child(3) { --i: 2; }
+.osint-steps > :nth-child(4) { --i: 3; }
+
+@media (min-width: 768px) {
+  /* Zig-zag: los pasos pares se desplazan a la derecha */
+  .osint-step:nth-child(even) { margin-left: var(--space-4); }
+  .osint-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  .osint-layout { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: var(--space-6); }
+  .osint-bottom { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--space-6); }
+}
+</style>

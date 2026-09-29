@@ -2,17 +2,17 @@
 import { Menu, X } from "@lucide/astro";
 
 const links = [
-  { href: "#about", label: "Sobre mí" },
-  { href: "#experience", label: "Experiencia" },
-  { href: "#projects", label: "Proyectos" },
-  { href: "#tools", label: "Herramientas" },
-  { href: "#company", label: "eCondor Digital" },
-  { href: "#contact", label: "Contacto" },
+  { href: "/#osint", label: "OSINT" },
+  { href: "/#projects", label: "Proyectos" },
+  { href: "/#tools", label: "Herramientas" },
+  { href: "/#about", label: "Trayectoria" },
+  { href: "/#company", label: "eCondor Digital" },
+  { href: "/#contact", label: "Contacto" },
 ];
 ---
 <header class="nav">
   <div class="container nav-inner">
-    <a href="#home" class="nav-logo">Mateo Miño</a>
+    <a href="/#home" class="nav-logo">Mateo Miño</a>
     <button class="nav-toggle" aria-label="Menú" aria-expanded="false" aria-controls="nav-links">
       <Menu class="icon-open" />
       <X class="icon-close" />
@@ -69,7 +69,7 @@ const links = [
           ? sections[sections.length - 1]
           : sections.filter((s) => s.getBoundingClientRect().top <= innerHeight * 0.4).pop();
     navLinks.forEach((link) => {
-      if (current && link.getAttribute("href") === `#${current.id}`) link.setAttribute("aria-current", "location");
+      if (current && link.hash === `#${current.id}`) link.setAttribute("aria-current", "location");
       else link.removeAttribute("aria-current");
     });
   }

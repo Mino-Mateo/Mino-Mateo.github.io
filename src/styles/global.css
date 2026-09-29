@@ -220,3 +220,13 @@ input::placeholder { color: var(--color-text-muted); }
     animation-delay: calc(var(--i, 0) * 80ms);
   }
 }
+
+/* Texto solo para lectores de pantalla (TPGi/Vispero, "The anatomy of visually-hidden") */
+.sr-only:not(:focus):not(:active) {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
