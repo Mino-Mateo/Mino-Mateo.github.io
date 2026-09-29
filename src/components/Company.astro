@@ -1,19 +1,45 @@
 ---
+import { Image } from "astro:assets";
+import econdorLogo from "../assets/images/econdor-logo.png";
 ---
 <section id="company" class="section">
-  <div class="container company">
-    <h2 class="section-title">[ 05 ] eCondor Digital</h2>
-    <h3>Software minimalista y moderno</h3>
+  <div class="container" data-reveal>
+    <h2 class="section-title"><span class="section-index">05</span>eCondor Digital</h2>
+    <div class="company-brand">
+      <Image
+        class="company-logo"
+        src={econdorLogo}
+        alt=""
+        width={56}
+        height={56}
+        widths={[56, 112]}
+        sizes="56px"
+        loading="lazy"
+      />
+      <h3>Software minimalista y moderno</h3>
+    </div>
     <p class="company-desc">
-      eCondor Digital es la empresa donde lidero la parte técnica y de
-      seguridad digital. Construimos productos web y mobile con foco en
+      eCondor Digital es la empresa que cofundé y donde lidero la parte técnica
+      y de seguridad digital. Construimos productos web y mobile con foco en
       velocidad, medición y escalabilidad: desarrollo web, apps móviles,
       backend & APIs, UI/UX, consultoría tech y MVPs.
     </p>
-    <a class="btn" href="https://econdordigital.org/" target="_blank" rel="noopener">econdordigital.org</a>
+    <a class="btn btn-primary" href="https://econdordigital.org/" target="_blank" rel="noopener">econdordigital.org</a>
   </div>
 </section>
 
 <style>
-.company-desc { color: var(--color-text-muted); max-width: 600px; margin-bottom: var(--space-3); }
+.company-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.company-brand h3 { margin: 0; }
+.company-logo {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.company-desc { margin-bottom: var(--space-3); }
 </style>

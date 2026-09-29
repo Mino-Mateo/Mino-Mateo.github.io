@@ -4,7 +4,7 @@ import { projects } from '../data/projects';
 ---
 <section id="projects" class="section">
   <div class="container">
-    <h2 class="section-title">[ 03 ] Proyectos</h2>
+    <h2 class="section-title" data-reveal><span class="section-index">03</span>Proyectos</h2>
     <div class="projects-grid">
       {projects.map((project) => (
         <ProjectCard
@@ -13,6 +13,7 @@ import { projects } from '../data/projects';
           role={project.role}
           stack={project.stack}
           image={project.image}
+          imagePosition={project.imagePosition}
         />
       ))}
     </div>
@@ -22,7 +23,10 @@ import { projects } from '../data/projects';
 <style>
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--space-3);
+}
+@media (min-width: 768px) {
+  .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .projects-grid > :global(:nth-child(even)) { --i: 1; }
 }
 </style>
