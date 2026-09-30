@@ -1,5 +1,5 @@
 ---
-import { FileDown, Mail } from "@lucide/astro";
+import { Mail } from "@lucide/astro";
 import EmailLink from "./EmailLink.astro";
 ---
 <section id="contact" class="section">
@@ -13,11 +13,7 @@ import EmailLink from "./EmailLink.astro";
       <EmailLink class="btn btn-primary"><Mail size={16} />Escríbeme</EmailLink>
       <a class="btn btn-ghost" href="https://www.linkedin.com/in/mateo-miño/">LinkedIn</a>
       <a class="btn btn-ghost" href="https://github.com/Mino-Mateo">GitHub</a>
-      <a class="btn btn-ghost" href="/cv-mateo-mino.pdf" download type="application/pdf">
-        <FileDown size={16} />CV (PDF, 2 págs., 36 KB)
-      </a>
     </div>
-    <p class="contact-note">CV actualizado: sep 2026.</p>
   </div>
 </section>
 
@@ -27,10 +23,5 @@ import EmailLink from "./EmailLink.astro";
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
-}
-.contact-note {
-  margin: var(--space-2) 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
 }
 </style>
