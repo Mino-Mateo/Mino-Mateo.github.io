@@ -9,7 +9,8 @@ export default defineConfig({
       directives: [
         "default-src 'self'",
         "img-src 'self' data: https://services.arcgisonline.com",
-        "connect-src 'self' https://geocode.arcgis.com https://geoquito.quito.gob.ec",
+        // GeoQuito, más la ficha de dominio: DNS, Wayback y la lista fija de RDAP de src/lib/dominio.ts
+        "connect-src 'self' https://geocode.arcgis.com https://geoquito.quito.gob.ec https://dns.google https://archive.org https://rdap.verisign.com https://rdap.publicinterestregistry.org https://rdap.registry.ec https://pubapi.registry.google https://rdap.registro.br https://rdap.nic.ar",
         "font-src 'self'",
         "object-src 'none'",
         "base-uri 'none'",

@@ -1,0 +1,174 @@
+---
+import { TLDS_RDAP } from "../../lib/dominio";
+const tlds = TLDS_RDAP.map((t) => "." + t).join(", ");
+---
+<div class="card tool-card" data-reveal>
+  <div class="tool-info">
+    <h3>Ficha de un dominio</h3>
+    <p class="tool-desc">
+      Reconocimiento pasivo: registro (RDAP), DNS, protección del correo contra suplantación
+      y primera captura en Wayback Machine. Solo fuentes públicas: no se escanea nada ni se
+      muestran contactos del registrante.
+    </p>
+    <p class="tool-desc">Registro disponible para {tlds}.</p>
+  </div>
+
+  <div class="tool-demo">
+    <form class="tool-form" id="dominio-form">
+      <div class="tool-field">
+        <label for="dominio-valor">Dominio</label>
+        <input id="dominio-valor" type="text" autocomplete="off" spellcheck="false" placeholder="epn.edu.ec" />
+      </div>
+      <button type="submit" class="btn btn-primary">Consultar</button>
+    </form>
+    <div id="dominio-result" class="tool-result" role="status"></div>
+    <dl id="dominio-tabla" class="tool-table" hidden></dl>
+    <div id="dominio-grafo-caja" hidden><svg id="dominio-grafo" class="grafo" viewBox="0 0 360 200" aria-hidden="true"></svg></div>
+  </div>
+</div>
+
+<script>
+  import { normalizarDominio, urlRdap, resumirRdap, registrosDns, evaluarCorreo, fechaWayback } from "../../lib/dominio";
+
+  const form = document.querySelector<HTMLFormElement>("#dominio-form");
+  const input = document.querySelector<HTMLInputElement>("#dominio-valor");
+  const boton = form?.querySelector<HTMLButtonElement>("button");
+  const resultBox = document.querySelector<HTMLDivElement>("#dominio-result");
+  const tabla = document.querySelector<HTMLDListElement>("#dominio-tabla");
+  const grafo = document.querySelector<SVGSVGElement>("#dominio-grafo");
+  const grafoCaja = document.querySelector<HTMLDivElement>("#dominio-grafo-caja");
+  const sinMovimiento = matchMedia("(prefers-reduced-motion: reduce)");
+  const NA = "no disponible";
+
+  const json = (url: string) =>
+    fetch(url, { signal: AbortSignal.timeout(10000) }).then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.json();
+    });
+  const dns = (name: string, type: string) => json(`https://dns.google/resolve?name=${name}&type=${type}`);
+  const valor = <T,>(r: PromiseSettledResult<T>) => (r.status === "fulfilled" ? r.value : null);
+
+  function mostrar(texto: string, ok: boolean | null) {
+    if (!resultBox) return;
+    resultBox.textContent = texto;
+    resultBox.classList.toggle("valido", ok === true);
+    resultBox.classList.toggle("invalido", ok === false);
+  }
+
+  // Dominio al centro y cada hallazgo alrededor; los nodos aparecen uno a uno
+  function dibujar(dominio: string, nodos: string[]) {
+    if (!grafo || !grafoCaja) return;
+    const ns = "http://www.w3.org/2000/svg";
+    const el = (tag: string, attrs: Record<string, string | number>, texto?: string) => {
+      const e = document.createElementNS(ns, tag);
+      for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+      if (texto) e.textContent = texto.length > 24 ? texto.slice(0, 23) + "…" : texto;
+      return e;
+    };
+    const cx = 180, cy = 100;
+    const partes: Element[] = [];
+    nodos.forEach((t, i) => {
+      const ang = (i / nodos.length) * 2 * Math.PI - Math.PI / 2;
+      const x = cx + Math.cos(ang) * 130, y = cy + Math.sin(ang) * 72;
+      const g = el("g", { class: "nodo" });
+      g.append(el("line", { x1: cx, y1: cy, x2: x, y2: y }), el("circle", { cx: x, cy: y, r: 4 }), el("text", { x, y: y + (y < cy ? -9 : 16), "text-anchor": "middle" }, t));
+      partes.push(g);
+    });
+    const centro = el("g", { class: "nodo centro" });
+    centro.append(el("circle", { cx, cy, r: 7 }), el("text", { x: cx, y: cy + 22, "text-anchor": "middle" }, dominio));
+    grafo.replaceChildren(...partes, centro);
+    grafoCaja.hidden = false;
+    const todos = [centro, ...partes];
+    todos.forEach((g, i) => (sinMovimiento.matches ? g.classList.add("on") : setTimeout(() => g.classList.add("on"), i * 120)));
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!input || !tabla || !boton || !grafoCaja) return;
+    const dominio = normalizarDominio(input.value);
+    if (!dominio) return mostrar("Escribe un dominio válido, por ejemplo epn.edu.ec", false);
+
+    boton.disabled = true;
+    tabla.hidden = true;
+    grafoCaja.hidden = true;
+    mostrar(`Consultando fuentes públicas para ${dominio}...`, null);
+
+    const rdapUrl = urlRdap(dominio);
+    const [rdapR, aR, nsR, mxR, txtR, dmarcR, waybackR] = await Promise.allSettled([
+      rdapUrl ? json(rdapUrl) : Promise.reject(new Error("sin RDAP")),
+      dns(dominio, "A"),
+      dns(dominio, "NS"),
+      dns(dominio, "MX"),
+      dns(dominio, "TXT"),
+      dns(`_dmarc.${dominio}`, "TXT"),
+      json(`https://archive.org/wayback/available?url=${dominio}&timestamp=19960101`),
+    ]);
+    boton.disabled = false;
+
+    const rdap = valor(rdapR) ? resumirRdap(valor(rdapR)) : null;
+    const ips = valor(aR) ? registrosDns(valor(aR), "A") : null;
+    // El RDAP de .ec no trae servidores DNS: se completan con la consulta NS
+    const servidores = rdap?.ns.length ? rdap.ns : valor(nsR) ? registrosDns(valor(nsR), "NS").map((n) => n.replace(/\.$/, "")) : [];
+    const mx = valor(mxR) ? registrosDns(valor(mxR), "MX").map((m) => m.split(" ").pop()!.replace(/\.$/, "")) : null;
+    const correo = valor(txtR) && valor(dmarcR) ? evaluarCorreo(registrosDns(valor(txtR), "TXT"), registrosDns(valor(dmarcR), "TXT")) : null;
+    const captura = valor(waybackR) ? fechaWayback(valor(waybackR)) : null;
+
+    if (!rdap && valor(aR)?.Status === 3) return mostrar(`${dominio} no existe (el DNS responde NXDOMAIN).`, false);
+
+    const filas: Array<[string, string]> = [
+      ["Registrador", rdap?.registrador ?? (rdapUrl ? NA : "TLD fuera de la demo")],
+      ["Creado", rdap?.creado ?? NA],
+      ["Vence", rdap?.vence ?? NA],
+      ["Servidores DNS", servidores.join(", ") || NA],
+      ["IP (A)", ips?.join(", ") || NA],
+      ["Correo (MX)", mx?.join(", ") || "sin MX"],
+      ["Correo", correo?.resumen ?? NA],
+      ["Primera captura", captura ?? (valor(waybackR) ? "sin capturas" : NA)],
+    ];
+    tabla.replaceChildren(
+      ...filas.flatMap(([k, v]) => {
+        const dt = document.createElement("dt");
+        dt.textContent = k;
+        const dd = document.createElement("dd");
+        dd.textContent = v;
+        return [dt, dd];
+      })
+    );
+    tabla.hidden = false;
+    mostrar(`Ficha de ${dominio} lista.`, true);
+
+    const nodos = [
+      rdap?.registrador,
+      servidores[0] && `NS ${servidores[0]}`,
+      ips?.[0] && `IP ${ips[0]}`,
+      mx?.[0] && `MX ${mx[0]}`,
+      correo && (correo.suplantable ? "correo suplantable" : "correo protegido"),
+      captura && `Wayback ${captura.slice(0, 4)}`,
+    ].filter((n): n is string => Boolean(n));
+    if (nodos.length) dibujar(dominio, nodos);
+  });
+</script>
+
+<style>
+.grafo {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+  margin-top: var(--space-2);
+  overflow: visible;
+}
+.grafo :global(.nodo) { opacity: 0; transition: opacity 300ms ease-out; }
+.grafo :global(.nodo.on) { opacity: 1; }
+.grafo :global(line) { stroke: var(--color-border-strong); stroke-width: 1; }
+.grafo :global(circle) { fill: var(--color-accent); }
+.grafo :global(.centro circle) { fill: var(--color-pink); }
+.grafo :global(text) {
+  fill: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+.grafo :global(.centro text) { fill: var(--color-text); font-size: 11.5px; }
+@media (prefers-reduced-motion: reduce) {
+  .grafo :global(.nodo) { transition: none; }
+}
+</style>

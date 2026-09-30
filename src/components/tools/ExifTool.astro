@@ -1,0 +1,107 @@
+---
+---
+<div class="card tool-card tool-card-reverse" data-reveal>
+  <div class="tool-info">
+    <h3>Metadatos de una foto (EXIF)</h3>
+    <p class="tool-desc">
+      Una foto puede decir con qué teléfono se tomó, cuándo y dónde. Carga un JPEG y mira
+      lo que revela; luego descárgalo sin metadatos, sin recomprimir. El archivo no sale de
+      tu navegador.
+    </p>
+  </div>
+
+  <div class="tool-demo">
+    <div class="tool-form">
+      <div class="tool-field">
+        <label for="exif-archivo">Foto (JPEG)</label>
+        <input id="exif-archivo" type="file" accept="image/jpeg" />
+      </div>
+      <button type="button" id="exif-ejemplo" class="btn btn-ghost">Usar foto de ejemplo</button>
+    </div>
+    <div id="exif-result" class="tool-result" role="status"></div>
+    <dl id="exif-tabla" class="tool-table" hidden></dl>
+    <div id="exif-acciones" class="exif-acciones" hidden>
+      <a id="exif-mapa" class="btn btn-ghost" hidden>Ver ubicación en OpenStreetMap</a>
+      <button type="button" id="exif-limpiar" class="btn btn-primary">Descargar sin metadatos</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { leerExif, limpiarJpeg } from "../../lib/exif";
+
+  const archivo = document.querySelector<HTMLInputElement>("#exif-archivo");
+  const ejemplo = document.querySelector<HTMLButtonElement>("#exif-ejemplo");
+  const resultBox = document.querySelector<HTMLDivElement>("#exif-result");
+  const tabla = document.querySelector<HTMLDListElement>("#exif-tabla");
+  const acciones = document.querySelector<HTMLDivElement>("#exif-acciones");
+  const mapa = document.querySelector<HTMLAnchorElement>("#exif-mapa");
+  const limpiar = document.querySelector<HTMLButtonElement>("#exif-limpiar");
+  let actual: { buffer: ArrayBuffer; nombre: string } | null = null;
+
+  function mostrar(texto: string, ok: boolean) {
+    if (!resultBox) return;
+    resultBox.textContent = texto;
+    resultBox.classList.toggle("valido", ok);
+    resultBox.classList.toggle("invalido", !ok);
+  }
+
+  function analizar(buffer: ArrayBuffer, nombre: string) {
+    if (!tabla || !acciones || !mapa) return;
+    tabla.hidden = true;
+    acciones.hidden = true;
+    try {
+      const r = leerExif(buffer);
+      actual = { buffer, nombre };
+      tabla.replaceChildren(
+        ...r.campos.flatMap(([k, v]) => {
+          const dt = document.createElement("dt");
+          dt.textContent = k;
+          const dd = document.createElement("dd");
+          dd.textContent = v;
+          return [dt, dd];
+        })
+      );
+      tabla.hidden = r.campos.length === 0;
+      acciones.hidden = r.campos.length === 0;
+      mapa.hidden = !r.gps;
+      if (r.gps) mapa.href = `https://www.openstreetmap.org/?mlat=${r.gps.lat}&mlon=${r.gps.lon}#map=17/${r.gps.lat}/${r.gps.lon}`;
+      if (!r.campos.length) mostrar("Sin metadatos EXIF: esta foto no revela cámara, fecha ni ubicación.", true);
+      else if (r.gps) mostrar(`La foto revela dónde se tomó (${r.gps.lat}, ${r.gps.lon}) y ${r.campos.length - 1} datos más.`, false);
+      else mostrar(`La foto revela ${r.campos.length} datos, sin ubicación GPS.`, false);
+    } catch {
+      actual = null;
+      mostrar("No se pudo leer: la demo solo acepta fotos JPEG.", false);
+    }
+  }
+
+  archivo?.addEventListener("change", async () => {
+    const f = archivo.files?.[0];
+    if (f) analizar(await f.arrayBuffer(), f.name);
+  });
+
+  ejemplo?.addEventListener("click", async () => {
+    const res = await fetch("/demo/foto-ejemplo.jpg");
+    analizar(await res.arrayBuffer(), "foto-ejemplo.jpg");
+  });
+
+  limpiar?.addEventListener("click", () => {
+    if (!actual) return;
+    const blob = new Blob([limpiarJpeg(actual.buffer)], { type: "image/jpeg" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = actual.nombre.replace(/\.jpe?g$/i, "") + "-sin-metadatos.jpg";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    mostrar("Listo: descargada sin metadatos. Si la foto aparece girada, es porque la orientación también era un metadato.", true);
+  });
+</script>
+
+<style>
+.exif-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+</style>

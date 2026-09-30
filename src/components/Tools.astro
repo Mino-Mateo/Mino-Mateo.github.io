@@ -2,6 +2,8 @@
 import CedulaTool from "./tools/CedulaTool.astro";
 import GeoquitoTool from "./tools/GeoquitoTool.astro";
 import TarjetaTool from "./tools/TarjetaTool.astro";
+import ExifTool from "./tools/ExifTool.astro";
+import DominioTool from "./tools/DominioTool.astro";
 ---
 <section id="tools" class="section">
   <div class="container">
@@ -13,16 +15,33 @@ import TarjetaTool from "./tools/TarjetaTool.astro";
       </p>
     </div>
 
+    <h3 class="tools-group" data-reveal>Validadores algorítmicos</h3>
     <div class="tools-grid">
       <CedulaTool />
-      <GeoquitoTool />
       <TarjetaTool />
+    </div>
+
+    <h3 class="tools-group" data-reveal>OSINT con fuentes abiertas</h3>
+    <div class="tools-grid">
+      <GeoquitoTool />
+      <DominioTool />
+      <ExifTool />
     </div>
   </div>
 </section>
 
 <style>
 .tools-intro { margin: 0 0 var(--space-4); }
+.tools-group {
+  margin: var(--space-4) 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.tools-grid + .tools-group { margin-top: var(--section-gap); }
 .tools-grid {
   display: grid;
   gap: var(--space-4);
@@ -81,4 +100,14 @@ import TarjetaTool from "./tools/TarjetaTool.astro";
   border-color: var(--color-error);
   color: var(--color-error);
 }
+:global(.tool-table) {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem var(--space-2);
+  margin: var(--space-2) 0 0;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+:global(.tool-table dt) { color: var(--color-text-muted); }
+:global(.tool-table dd) { margin: 0; }
 </style>

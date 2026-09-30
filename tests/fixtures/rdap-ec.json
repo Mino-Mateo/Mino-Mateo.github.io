@@ -1,0 +1,64 @@
+{
+ "ldhName": "epn.edu.ec",
+ "status": [
+  "active"
+ ],
+ "events": [
+  {
+   "eventAction": "registration",
+   "eventDate": "2011-04-16T00:00:00Z"
+  },
+  {
+   "eventAction": "reregistration",
+   "eventActor": "REINEC Registrar - EcuaWeb.com - EcuaHosting.NET - GET.EC - HostingColor.com",
+   "eventDate": "2026-01-08T16:37:21Z"
+  },
+  {
+   "eventAction": "transfer",
+   "eventActor": "REINEC Registrar - EcuaWeb.com - EcuaHosting.NET - GET.EC - HostingColor.com",
+   "eventDate": "2025-11-19T16:33:28Z"
+  },
+  {
+   "eventAction": "expiration",
+   "eventDate": "2036-01-26T23:00:00Z"
+  },
+  {
+   "eventAction": "last changed",
+   "eventDate": "2026-03-27T15:26:03Z"
+  },
+  {
+   "eventAction": "last update of RDAP database",
+   "eventDate": "2026-09-30T01:33:43Z"
+  }
+ ],
+ "entities": [
+  {
+   "roles": [
+    "registrar"
+   ],
+   "vcardArray": [
+    "vcard",
+    [
+     [
+      "version",
+      {},
+      "text",
+      "4.0"
+     ],
+     [
+      "fn",
+      {},
+      "text",
+      "REINEC Registrar - EcuaWeb.com - EcuaHosting.NET - GET.EC - HostingColor.com"
+     ],
+     [
+      "url",
+      {},
+      "text",
+      "http://www.reinec.com"
+     ]
+    ]
+   ]
+  }
+ ]
+}

@@ -1,3 +1,5 @@
 {
-  "extends": "astro/tsconfigs/base"
+  "extends": "astro/tsconfigs/base",
+  // Los tests corren con node --test (tipos de Node), fuera de astro check
+  "exclude": ["dist", "tests"]
 }

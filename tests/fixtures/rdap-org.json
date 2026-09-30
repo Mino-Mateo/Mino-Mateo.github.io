@@ -1,0 +1,68 @@
+{
+ "ldhName": "econdordigital.org",
+ "status": [
+  "client transfer prohibited"
+ ],
+ "events": [
+  {
+   "eventAction": "expiration",
+   "eventDate": "2027-03-05T01:28:04.182Z"
+  },
+  {
+   "eventAction": "registration",
+   "eventDate": "2026-03-05T01:28:04.182Z"
+  },
+  {
+   "eventAction": "last changed",
+   "eventDate": "2026-08-12T06:07:52.019Z"
+  },
+  {
+   "eventAction": "last update of RDAP database",
+   "eventDate": "2026-09-30T01:33:44.418Z"
+  }
+ ],
+ "nameservers": [
+  {
+   "ldhName": "mckinley.ns.cloudflare.com",
+   "unicodeName": "mckinley.ns.cloudflare.com",
+   "objectClassName": "nameserver",
+   "handle": "9fdde3d67ee5492b8293781872ee9b4b-LROR",
+   "status": [
+    "associated"
+   ]
+  },
+  {
+   "ldhName": "nero.ns.cloudflare.com",
+   "unicodeName": "nero.ns.cloudflare.com",
+   "objectClassName": "nameserver",
+   "handle": "e4636663835343e2a338e7389249effa-LROR",
+   "status": [
+    "associated"
+   ]
+  }
+ ],
+ "entities": [
+  {
+   "roles": [
+    "registrar"
+   ],
+   "vcardArray": [
+    "vcard",
+    [
+     [
+      "version",
+      {},
+      "text",
+      "4.0"
+     ],
+     [
+      "fn",
+      {},
+      "text",
+      "Name.com, Inc."
+     ]
+    ]
+   ]
+  }
+ ]
+}
