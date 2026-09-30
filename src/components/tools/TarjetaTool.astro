@@ -1,8 +1,10 @@
 ---
+import DemoCard from "./DemoCard.astro";
+import { CreditCard } from "@lucide/astro";
 ---
-<div class="card tool-card" data-reveal>
+<DemoCard id="demo-tarjeta" titulo="Verificador de tarjeta" resumen="Luhn, marca y longitud de una tarjeta" local={true}>
+  <CreditCard slot="icon" size={22} />
   <div class="tool-info">
-    <h3>Verificador de tarjeta</h3>
     <p class="tool-desc">
       Valida un número de tarjeta con el algoritmo de Luhn e identifica la marca
       (Visa, Mastercard, American Express, Discover, Diners Club, JCB, UnionPay, Maestro)
@@ -39,7 +41,7 @@
       <p class="luhn-leyenda"><span class="luhn-muestra"></span> dígito duplicado (si pasa de 9, se resta 9)</p>
     </div>
   </div>
-</div>
+</DemoCard>
 
 <script>
   import { validarTarjeta } from "../../lib/validators/tarjeta";

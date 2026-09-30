@@ -1,12 +1,14 @@
 ---
+import DemoCard from "./DemoCard.astro";
+import { IdCard } from "@lucide/astro";
 import { paises } from "../../lib/validators";
 ---
-<div class="card tool-card" data-reveal>
+<DemoCard id="demo-cedula" titulo="Verificador de identificación" resumen="Cédula, RUT, CURP o CPF por su dígito verificador" local={true}>
+  <IdCard slot="icon" size={22} />
   <div class="tool-info">
-    <h3>Verificador de identificación</h3>
     <p class="tool-desc">
       Verificador de números de identificación por país. El cálculo corre
-      100% en tu navegador — no se guarda ni se envía ningún dato.
+      100% en tu navegador: no se guarda ni se envía ningún dato.
     </p>
     <a
       class="btn btn-ghost"
@@ -33,7 +35,7 @@ import { paises } from "../../lib/validators";
 
     <div id="cedula-result" class="tool-result" role="status"></div>
   </div>
-</div>
+</DemoCard>
 
 <script>
   import { paises } from "../../lib/validators";

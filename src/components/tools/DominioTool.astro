@@ -1,10 +1,12 @@
 ---
+import DemoCard from "./DemoCard.astro";
+import { Globe } from "@lucide/astro";
 import { TLDS_RDAP } from "../../lib/dominio";
 const tlds = TLDS_RDAP.map((t) => "." + t).join(", ");
 ---
-<div class="card tool-card" data-reveal>
+<DemoCard id="demo-dominio" titulo="Ficha de un dominio" resumen="Registro, DNS, correo y primera captura" local={false}>
+  <Globe slot="icon" size={22} />
   <div class="tool-info">
-    <h3>Ficha de un dominio</h3>
     <p class="tool-desc">
       Reconocimiento pasivo: registro (RDAP), DNS, protección del correo contra suplantación
       y primera captura en Wayback Machine. Solo fuentes públicas: no se escanea nada ni se
@@ -25,7 +27,7 @@ const tlds = TLDS_RDAP.map((t) => "." + t).join(", ");
     <dl id="dominio-tabla" class="tool-table" hidden></dl>
     <div id="dominio-grafo-caja" hidden><svg id="dominio-grafo" class="grafo" viewBox="0 0 360 200" aria-hidden="true"></svg></div>
   </div>
-</div>
+</DemoCard>
 
 <script>
   import { normalizarDominio, urlRdap, resumirRdap, registrosDns, evaluarCorreo, fechaWayback } from "../../lib/dominio";

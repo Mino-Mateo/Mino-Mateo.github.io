@@ -8,13 +8,14 @@ const cargar = (ruta: string) => {
   return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
 };
 
-test("foto de ejemplo (little endian): campos y GPS al sur y oeste", () => {
+test("foto de ejemplo (little endian): campos y GPS al norte y este", () => {
   const r = leerExif(cargar("../public/demo/foto-ejemplo.jpg"));
   const campos = Object.fromEntries(r.campos);
   assert.equal(campos["Marca"], "Demo");
   assert.equal(campos["Modelo"], "Camara de ejemplo");
   assert.equal(campos["Fecha de captura"], "2026:09:29 10:15:00");
-  assert.deepEqual(r.gps, { lat: -0.2201, lon: -78.5125 });
+  assert.deepEqual(r.gps, { lat: 48.8584, lon: 2.2945 });
+  assert.ok(!r.campos.some(([, v]) => /Mateo|Mino|Quito/i.test(v)), "sin datos del autor");
 });
 
 test("big endian (formato de iPhone): marca y GPS al norte y este", () => {

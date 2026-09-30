@@ -42,7 +42,7 @@ export const projects: Project[] = [
     stack: ["Python", "Leaflet", "ArcGIS REST API"],
     area: "osint",
     image: geoquitoImage,
-    links: [{ label: "Probar demo", href: "#tools" }],
+    links: [{ label: "Probar demo", href: "#demo-geoquito" }],
   },
   {
     name: "Spectra",
@@ -61,7 +61,7 @@ export const projects: Project[] = [
     area: "osint",
     links: [
       { label: "Código", href: "https://github.com/Mino-Mateo/Verificador-de-C-dula" },
-      { label: "Probar demo", href: "#tools" },
+      { label: "Probar demo", href: "#demo-cedula" },
     ],
   },
   {

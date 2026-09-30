@@ -1,0 +1,26 @@
+---
+// Tarjeta desplegable nativa (<details>): funciona sin JS y name="demos" deja una sola abierta
+import { ChevronDown } from "@lucide/astro";
+
+interface Props {
+  id: string;
+  titulo: string;
+  resumen: string;
+  local: boolean;
+}
+const { id, titulo, resumen, local } = Astro.props;
+---
+<details class="card tool-card" name="demos" id={id} data-reveal>
+  <summary class="tool-summary">
+    <span class="tool-icon"><slot name="icon" /></span>
+    <span class="tool-head">
+      <h3>{titulo}</h3>
+      <span class="tool-resumen">{resumen}</span>
+      <span class:list={["tool-tag", { "tool-tag-red": !local }]}>{local ? "100% local" : "Fuentes públicas"}</span>
+    </span>
+    <ChevronDown class="tool-chevron" size={20} />
+  </summary>
+  <div class="tool-body">
+    <slot />
+  </div>
+</details>

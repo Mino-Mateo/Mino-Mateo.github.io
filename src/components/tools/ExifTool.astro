@@ -1,8 +1,10 @@
 ---
+import DemoCard from "./DemoCard.astro";
+import { Camera } from "@lucide/astro";
 ---
-<div class="card tool-card tool-card-reverse" data-reveal>
+<DemoCard id="demo-exif" titulo="Metadatos de una foto (EXIF)" resumen="Qué revela una foto y cómo limpiarla" local={true}>
+  <Camera slot="icon" size={22} />
   <div class="tool-info">
-    <h3>Metadatos de una foto (EXIF)</h3>
     <p class="tool-desc">
       Una foto puede decir con qué teléfono se tomó, cuándo y dónde. Carga un JPEG y mira
       lo que revela; luego descárgalo sin metadatos, sin recomprimir. El archivo no sale de
@@ -25,7 +27,7 @@
       <button type="button" id="exif-limpiar" class="btn btn-primary">Descargar sin metadatos</button>
     </div>
   </div>
-</div>
+</DemoCard>
 
 <script>
   import { leerExif, limpiarJpeg } from "../../lib/exif";

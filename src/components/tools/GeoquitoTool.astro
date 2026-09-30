@@ -1,16 +1,14 @@
 ---
+import DemoCard from "./DemoCard.astro";
+import { MapPinned } from "@lucide/astro";
 import { Crosshair } from "@lucide/astro";
 ---
-<div class="card tool-card tool-card-reverse" data-reveal>
+<DemoCard id="demo-geoquito" titulo="Consulta predial GeoQuito" resumen="Predio de Quito por calle o punto del mapa" local={false}>
+  <MapPinned slot="icon" size={22} />
   <div class="tool-info">
-    <h3>Consulta predial GeoQuito</h3>
     <p class="tool-desc">
-      Escribe una calle de Quito, haz clic en el mapa (o usa el botón para
-      identificar el predio en el centro) y mira la información básica del
-      predio en ese punto — usando la API pública y abierta del
-      geoportal municipal (sin autenticación). Versión reducida: el sistema
-      completo también permite buscar por cédula, propietario, valoración y
-      generar reportes, pero eso se queda fuera de este demo público.
+      Escribe una calle de Quito o haz clic en el mapa y mira la información básica del
+      predio en ese punto, con la API pública del geoportal municipal.
     </p>
     <p class="tool-desc">
       Privacidad: las búsquedas van directo a geocode.arcgis.com y
@@ -38,7 +36,7 @@ import { Crosshair } from "@lucide/astro";
     </button>
     <div id="geo-result" class="tool-result" hidden></div>
   </div>
-</div>
+</DemoCard>
 
 <script>
   import leafletCss from "leaflet/dist/leaflet.css?url";
@@ -343,6 +341,10 @@ import { Crosshair } from "@lucide/astro";
       { rootMargin: "400px 0px" }
     );
     io.observe(mapEl);
+    // Si el mapa se creó y la tarjeta se cerró y reabrió, Leaflet debe recalcular su tamaño
+    mapEl.closest("details")?.addEventListener("toggle", (e) => {
+      if ((e.target as HTMLDetailsElement).open) mapa?.invalidateSize();
+    });
   }
 </script>
 
