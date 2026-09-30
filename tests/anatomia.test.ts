@@ -20,8 +20,8 @@ test("Chile: con y sin puntos, K como verificador", () => {
 });
 
 test("México: CURP ficticia partida en 7 segmentos", () => {
-  const s = anatomia("mexico", "PELJ900101HPLRPN02")!;
-  assert.equal(unir(s), "PELJ900101HPLRPN02");
+  const s = anatomia("mexico", "PELJ900101HPLRPN00")!;
+  assert.equal(unir(s), "PELJ900101HPLRPN00");
   assert.equal(s[1].nota, "Nacimiento: 01/01/90");
   assert.equal(s[3].nota, "Estado: Puebla");
   assert.equal(s[5].nota, "Homoclave: nacido antes de 2000");

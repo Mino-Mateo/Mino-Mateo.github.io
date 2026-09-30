@@ -29,7 +29,7 @@ export const paises: PaisValidador[] = [
   {
     id: "mexico",
     nombre: "México (CURP)",
-    placeholder: "PELJ900101HPLRPN02",
+    placeholder: "PELJ900101HPLRPN00",
     validar: validarMexico,
   },
   {
