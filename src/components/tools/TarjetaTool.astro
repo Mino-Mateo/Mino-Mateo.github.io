@@ -35,6 +35,8 @@ import { CreditCard } from "@lucide/astro";
     </form>
 
     <div id="tarjeta-result" class="tool-result" role="status"></div>
+    <p id="tarjeta-anat-titulo" class="anat-titulo">Cómo se lee (tarjeta de prueba)</p>
+    <div id="tarjeta-anatomia" class="anat"></div>
     <div id="tarjeta-luhn" class="luhn" aria-hidden="true" hidden>
       <div id="tarjeta-celdas" class="luhn-celdas"></div>
       <p id="tarjeta-suma" class="luhn-suma"></p>
@@ -45,6 +47,8 @@ import { CreditCard } from "@lucide/astro";
 
 <script>
   import { validarTarjeta } from "../../lib/validators/tarjeta";
+  import { anatomiaTarjeta } from "../../lib/validators/anatomia";
+  import { dibujarAnatomia } from "../../lib/anatomia-dom";
 
   const form = document.querySelector<HTMLFormElement>("#tarjeta-form");
   const input = document.querySelector<HTMLInputElement>("#tarjeta-valor");
@@ -54,6 +58,18 @@ import { CreditCard } from "@lucide/astro";
   const sumaEl = document.querySelector<HTMLParagraphElement>("#tarjeta-suma");
   const sinMovimiento = matchMedia("(prefers-reduced-motion: reduce)");
   let timers: ReturnType<typeof setTimeout>[] = [];
+  const anatCaja = document.querySelector<HTMLDivElement>("#tarjeta-anatomia");
+  const anatTitulo = document.querySelector<HTMLParagraphElement>("#tarjeta-anat-titulo");
+
+  function explicar(valor: string | null) {
+    if (!anatCaja || !anatTitulo) return;
+    const numero = valor ?? "4242424242424242";
+    const segs = anatomiaTarjeta(numero, validarTarjeta(numero).marca?.nombre ?? null);
+    anatTitulo.textContent = valor ? "Cómo se lee tu número" : "Cómo se lee (tarjeta de prueba)";
+    anatTitulo.hidden = !segs;
+    dibujarAnatomia(anatCaja, segs);
+  }
+  explicar(null);
 
   // Agrupa en bloques de 4 solo si se escribe al final, para no mover el cursor a mitad del número
   input?.addEventListener("input", () => {
@@ -67,6 +83,7 @@ import { CreditCard } from "@lucide/astro";
     if (!input || !resultBox || !luhn || !celdas || !sumaEl) return;
 
     const r = validarTarjeta(input.value);
+    explicar(input.value);
     resultBox.textContent = r.suma === null ? r.mensaje : `${r.mensaje}. Suma de Luhn: ${r.suma}.`;
     resultBox.classList.toggle("valido", r.valido);
     resultBox.classList.toggle("invalido", !r.valido);

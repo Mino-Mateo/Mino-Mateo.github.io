@@ -16,25 +16,25 @@ export interface PaisValidador {
 export const paises: PaisValidador[] = [
   {
     id: "ecuador",
-    nombre: "Ecuador — Cédula",
-    placeholder: "1234567890",
+    nombre: "Ecuador (cédula)",
+    placeholder: "1234567897",
     validar: validarEcuador,
   },
   {
     id: "chile",
-    nombre: "Chile — RUT",
+    nombre: "Chile (RUT)",
     placeholder: "12345678-5",
     validar: validarChile,
   },
   {
     id: "mexico",
-    nombre: "México — CURP",
-    placeholder: "XXXX000000XXXXXX00",
+    nombre: "México (CURP)",
+    placeholder: "PELJ900101HPLRPN02",
     validar: validarMexico,
   },
   {
     id: "brasil",
-    nombre: "Brasil — CPF",
+    nombre: "Brasil (CPF)",
     placeholder: "12345678909",
     validar: validarBrasil,
   },

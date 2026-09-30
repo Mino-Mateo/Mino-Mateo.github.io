@@ -117,6 +117,50 @@ import DominioTool from "./tools/DominioTool.astro";
 @media (prefers-reduced-motion: reduce) {
   :global(.tool-chevron), :global(.tool-summary) { transition: none; }
 }
+/* Anatomía del número: cada parte con su color y su significado */
+:global(.rol-origen) { --c: #fa93fa; }
+:global(.rol-tipo) { --c: #7dd3fc; }
+:global(.rol-datos) { --c: #f5b454; }
+:global(.rol-secuencia) { --c: #9ca3af; }
+:global(.rol-verificador) { --c: #4ade80; }
+:global(.anat-titulo) {
+  margin: var(--space-3) 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+:global(.anat-fila) { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+:global(.anat-seg) {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--c);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--c) 18%, transparent);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text);
+}
+:global(.anat-lista) {
+  display: grid;
+  gap: 0.25rem;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+:global(.anat-lista li) { display: flex; gap: 0.5rem; align-items: baseline; }
+:global(.anat-lista li)::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0.625rem;
+  height: 0.625rem;
+  border: 1px solid var(--c);
+  background: color-mix(in srgb, var(--c) 40%, transparent);
+}
+:global(.anat-lista strong) { font-family: var(--font-mono); font-weight: 600; color: var(--c); }
+
 @media (max-width: 479px) {
   :global(.tool-summary) { padding: var(--space-2); }
   :global(.tool-body) { padding: 0 var(--space-2) var(--space-2); }

@@ -34,24 +34,44 @@ import { paises } from "../../lib/validators";
     </form>
 
     <div id="cedula-result" class="tool-result" role="status"></div>
+    <p id="cedula-anat-titulo" class="anat-titulo">Cómo se lee (ejemplo ficticio)</p>
+    <div id="cedula-anatomia" class="anat"></div>
   </div>
 </DemoCard>
 
 <script>
   import { paises } from "../../lib/validators";
+  import { anatomia } from "../../lib/validators/anatomia";
+  import { dibujarAnatomia } from "../../lib/anatomia-dom";
 
   const form = document.querySelector<HTMLFormElement>("#cedula-form");
   const paisSelect = document.querySelector<HTMLSelectElement>("#cedula-pais");
   const valorInput = document.querySelector<HTMLInputElement>("#cedula-valor");
   const resultBox = document.querySelector<HTMLDivElement>("#cedula-result");
+  const anatCaja = document.querySelector<HTMLDivElement>("#cedula-anatomia");
+  const anatTitulo = document.querySelector<HTMLParagraphElement>("#cedula-anat-titulo");
+
+  // Sin número propio se explica el ejemplo ficticio del país elegido
+  function explicar(valor: string | null) {
+    const pais = paises.find((p) => p.id === paisSelect?.value);
+    if (!pais || !anatCaja || !anatTitulo) return;
+    const segs = anatomia(pais.id, valor ?? pais.placeholder);
+    anatTitulo.textContent = valor ? "Cómo se lee tu número" : "Cómo se lee (ejemplo ficticio)";
+    anatTitulo.hidden = !segs;
+    dibujarAnatomia(anatCaja, segs);
+  }
 
   function actualizarPlaceholder() {
     const pais = paises.find((p) => p.id === paisSelect?.value);
     if (pais && valorInput) valorInput.placeholder = pais.placeholder;
   }
 
-  paisSelect?.addEventListener("change", actualizarPlaceholder);
+  paisSelect?.addEventListener("change", () => {
+    actualizarPlaceholder();
+    explicar(null);
+  });
   actualizarPlaceholder();
+  explicar(null);
 
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -63,5 +83,6 @@ import { paises } from "../../lib/validators";
     resultBox.textContent = resultado.mensaje;
     resultBox.classList.toggle("valido", resultado.valido);
     resultBox.classList.toggle("invalido", !resultado.valido);
+    explicar(valorInput.value);
   });
 </script>
