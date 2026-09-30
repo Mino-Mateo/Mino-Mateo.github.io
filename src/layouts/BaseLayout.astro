@@ -7,24 +7,48 @@ import profilePhoto from '../assets/images/mateo-mino.jpg';
 interface Props {
   title: string;
   description: string;
+  noindex?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogPhoto = await getImage({ src: profilePhoto, width: 600, format: 'jpg' });
-const ogImage = new URL(ogPhoto.src, Astro.site).href;
-const person = {
+const home = new URL('/', Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+const ogAlt = 'Mateo Miño, Investigador OSINT en Quito, Ecuador';
+const photo = await getImage({ src: profilePhoto, width: 600, format: 'jpg' });
+// Sin teléfono, domicilio ni email (reglas OPSEC del spec, sección 2)
+const profile = {
   '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: 'Mateo Miño',
-  jobTitle: 'Tech Lead & Seguridad Digital',
-  url: canonical,
-  image: ogImage,
-  worksFor: { '@type': 'Organization', name: 'eCondor Digital', url: 'https://econdordigital.org/' },
-  sameAs: [
-    'https://github.com/Mino-Mateo',
-    'https://www.linkedin.com/in/mateo-miño/',
-    'https://www.youtube.com/@mateomino-vc4hl',
-  ],
+  '@type': 'ProfilePage',
+  dateCreated: '2023-12-16T10:10:37-05:00',
+  dateModified: new Date().toISOString(),
+  mainEntity: {
+    '@type': 'Person',
+    '@id': `${home}#person`,
+    name: 'Mateo Miño',
+    alternateName: 'Mino-Mateo',
+    description:
+      'Investigador OSINT especializado en escaneo de endpoints para detectar fugas de datos y consultas expuestas, con divulgación responsable.',
+    jobTitle: 'Investigador OSINT',
+    url: home,
+    image: new URL(photo.src, Astro.site).href,
+    address: { '@type': 'PostalAddress', addressLocality: 'Quito', addressCountry: 'EC' },
+    worksFor: { '@type': 'Organization', name: 'eCondor Digital', url: 'https://econdordigital.org/' },
+    alumniOf: { '@type': 'EducationalOrganization', name: 'Escuela Politécnica Nacional', url: 'https://www.epn.edu.ec/' },
+    knowsAbout: [
+      'OSINT',
+      'Ciberinteligencia',
+      'Escaneo de endpoints',
+      'Fuzzing',
+      'Detección de filtraciones de datos',
+      'Divulgación responsable',
+      'Seguridad digital',
+    ],
+    sameAs: [
+      'https://github.com/Mino-Mateo',
+      'https://www.linkedin.com/in/mateo-mi%C3%B1o/',
+      'https://www.youtube.com/@mateomino-vc4hl',
+    ],
+  },
 };
 ---
 <!DOCTYPE html>
@@ -32,21 +56,27 @@ const person = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Mateo Miño" />
     <meta name="theme-color" content="#010101" />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mateo Miño" />
     <meta property="og:locale" content="es_EC" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image:alt" content={ogAlt} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script is:inline>document.documentElement.classList.add('js');</script>
-    <script type="application/ld+json" set:html={JSON.stringify(person)} />
-    <title>{title}</title>
+    {!noindex && <script type="application/ld+json" set:html={JSON.stringify(profile)} />}
   </head>
   <body>
     <a class="skip-link" href="#main">Saltar al contenido</a>

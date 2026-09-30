@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Footer from '../components/Footer.astro';
+import { SearchX } from '@lucide/astro';
+---
+<BaseLayout
+  title="Página no encontrada | Mateo Miño"
+  description="La página que buscas no existe o cambió de dirección."
+  noindex
+>
+  <main id="main" class="section">
+    <div class="container not-found">
+      <SearchX size={40} />
+      <h1>Página no encontrada</h1>
+      <p>La dirección no existe o cambió. Puedes seguir por aquí:</p>
+      <a class="btn btn-primary" href="/">Volver al inicio</a>
+      <ul class="not-found-links">
+        <li><a href="/#osint">Investigación OSINT</a></li>
+        <li><a href="/#projects">Proyectos</a></li>
+        <li><a href="/#tools">Herramientas</a></li>
+      </ul>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+.not-found {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  min-height: 50vh;
+  align-content: center;
+}
+.not-found :global(svg) { color: var(--color-accent); }
+.not-found h1 { margin: 0; font-size: clamp(2rem, 5vw, 3rem); }
+.not-found p { margin: 0; }
+.not-found-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+.not-found-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+</style>
