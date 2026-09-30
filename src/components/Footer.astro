@@ -1,5 +1,6 @@
 ---
 import { ArrowUp } from "@lucide/astro";
+import EmailLink from "./EmailLink.astro";
 
 const socials = [
   { href: "https://github.com/Mino-Mateo", label: "GitHub" },
@@ -10,15 +11,17 @@ const socials = [
 <footer class="footer">
   <div class="container footer-inner">
     <ul class="footer-links">
+      <li><EmailLink /></li>
       {socials.map((s) => (
-        <li><a href={s.href} target="_blank" rel="noopener">{s.label}</a></li>
+        <li><a href={s.href}>{s.label}</a></li>
       ))}
     </ul>
-    <a href="#home" class="back-to-top">
+    <a href="/#home" class="back-to-top">
       <ArrowUp size={16} />
       Volver arriba
     </a>
   </div>
+  <p class="container footer-privacy">Sin cookies ni analítica. Solo se contacta a terceros cuando llegas al mapa.</p>
 </footer>
 
 <style>
@@ -33,21 +36,26 @@ const socials = [
 .footer-links {
   list-style: none;
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: wrap;
+  column-gap: var(--space-3);
   margin: 0;
   padding: 0;
 }
-.footer-links a,
+.footer-links :global(a),
 .back-to-top {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.75rem 0;
+  min-height: 44px;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-muted);
   transition: color var(--dur) ease-out;
 }
-.footer-links a:hover,
+.footer-links :global(a:hover),
 .back-to-top:hover { color: var(--color-accent); text-decoration: none; }
+.footer-privacy {
+  margin-top: var(--space-2);
+  font-size: 0.75rem;
+}
 </style>

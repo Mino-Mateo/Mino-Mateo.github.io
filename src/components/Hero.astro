@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
-import { ArrowUpRight, Zap } from "@lucide/astro";
+import { ArrowRight, FileDown, MapPin, Zap } from "@lucide/astro";
+import EmailLink from "./EmailLink.astro";
 import profilePhoto from "../assets/images/mateo-mino.jpg";
 ---
 <section id="home" class="hero">
@@ -10,21 +11,31 @@ import profilePhoto from "../assets/images/mateo-mino.jpg";
         <span class="hero-badge-icon">
           <Zap size={14} fill="currentColor" />
         </span>
-        Ciberseguridad · Inteligencia · OSINT
+        Investigador OSINT
       </p>
       <h1 class="hero-title">Mateo Miño</h1>
+      <p class="hero-role">Investigador OSINT | Seguridad Digital | Tech Lead</p>
       <p class="hero-bio">
-        Tech Lead & Seguridad Digital. Diseño y construyo herramientas de
-        inteligencia, investigación e infraestructura segura.
+        Escaneo endpoints y hago fuzzing de rutas, parámetros y APIs para encontrar datos
+        personales y consultas expuestas en sistemas públicos. Lo que encuentro lo verifico y lo
+        reporto de forma responsable.
+      </p>
+      <p class="hero-meta">
+        <MapPin size={16} />
+        <span>Quito, Ecuador (UTC-5) · Disponible para investigaciones OSINT y consultoría en seguridad</span>
       </p>
       <div class="hero-links">
-        <a class="btn btn-ghost" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">
-          GitHub
+        <a class="btn btn-primary" href="#osint">
+          Ver investigación OSINT
           <span class="btn-arrow">
-            <ArrowUpRight size={16} stroke-width={2.5} />
+            <ArrowRight size={16} stroke-width={2.5} />
           </span>
         </a>
-        <a class="btn btn-ghost" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
+        <EmailLink class="btn btn-ghost">Escríbeme</EmailLink>
+        <a class="btn btn-ghost" href="/cv-mateo-mino.pdf" download type="application/pdf">
+          <FileDown size={16} />
+          CV (PDF, 2 págs., 36 KB)
+        </a>
       </div>
     </div>
     <div class="hero-visual">
@@ -94,7 +105,21 @@ import profilePhoto from "../assets/images/mateo-mino.jpg";
   background-clip: text;
   color: transparent;
 }
-.hero-bio { margin: 0 0 var(--space-4); }
+.hero-role {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text);
+  font-weight: 600;
+}
+.hero-bio { margin: 0 0 var(--space-2); }
+.hero-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+.hero-meta :global(svg) { flex-shrink: 0; margin-top: 0.15rem; color: var(--color-accent); }
 .hero-links { display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .hero-photo {
   display: block;

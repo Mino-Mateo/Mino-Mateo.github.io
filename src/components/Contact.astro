@@ -1,15 +1,23 @@
 ---
+import { FileDown, Mail } from "@lucide/astro";
+import EmailLink from "./EmailLink.astro";
 ---
 <section id="contact" class="section">
   <div class="container" data-reveal>
     <h2 class="section-title"><span class="section-index" aria-hidden="true">07</span>Contacto</h2>
     <p class="contact-text">
-      ¿Quieres hablar de un proyecto o colaboración? Escríbeme por GitHub o LinkedIn.
+      ¿Tienes una investigación, un hallazgo que reportar o un proyecto?
+      Escríbeme a <EmailLink />. Respondo desde Quito (UTC-5).
     </p>
     <div class="contact-links">
-      <a class="btn btn-primary" href="https://github.com/Mino-Mateo" target="_blank" rel="noopener">GitHub</a>
-      <a class="btn btn-ghost" href="https://www.linkedin.com/in/mateo-miño/" target="_blank" rel="noopener">LinkedIn</a>
+      <EmailLink class="btn btn-primary"><Mail size={16} />Escríbeme</EmailLink>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/mateo-miño/">LinkedIn</a>
+      <a class="btn btn-ghost" href="https://github.com/Mino-Mateo">GitHub</a>
+      <a class="btn btn-ghost" href="/cv-mateo-mino.pdf" download type="application/pdf">
+        <FileDown size={16} />CV (PDF, 2 págs., 36 KB)
+      </a>
     </div>
+    <p class="contact-note">CV actualizado: sep 2026.</p>
   </div>
 </section>
 
@@ -19,5 +27,10 @@
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
+}
+.contact-note {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
 }
 </style>

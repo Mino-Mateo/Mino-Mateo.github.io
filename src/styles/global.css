@@ -189,6 +189,8 @@ a:hover { text-decoration: underline; }
   background: var(--gradient-accent);
   color: var(--color-bg);
 }
+/* Dentro del botón primario el degradado se pierde sobre el acento: círculo oscuro */
+.btn-primary .btn-arrow { background: var(--color-bg); color: var(--color-accent); }
 
 label {
   font-size: 0.875rem;
