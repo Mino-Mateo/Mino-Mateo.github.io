@@ -1,4 +1,5 @@
 import type { ResultadoValidacion } from "./types";
+import { ESTADOS_MX } from "./anatomia.ts";
 
 const TABLA_VALORES = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
 const FORMATO_CURP =
@@ -17,10 +18,14 @@ export function validarMexico(valorRaw: string): ResultadoValidacion {
     return { valido: false, mensaje: "Formato inválido: fecha fuera de rango" };
   }
 
+  if (!(valor.slice(11, 13) in ESTADOS_MX)) {
+    return { valido: false, mensaje: "Formato inválido: clave de estado inexistente" };
+  }
+
   let suma = 0;
   for (let i = 0; i < 17; i++) {
     const valorCaracter = TABLA_VALORES.indexOf(valor[i]);
-    const peso = 18 - (i + 1);
+    const peso = 18 - i; // pesos 18 a 2 (verificado contra CURP publicadas, ver tests)
     suma += valorCaracter * peso;
   }
 

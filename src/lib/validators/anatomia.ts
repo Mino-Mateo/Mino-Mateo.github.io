@@ -25,7 +25,7 @@ const PROVINCIAS_EC: Record<string, string> = {
   "23": "Santo Domingo de los Tsáchilas", "24": "Santa Elena", "30": "Ecuatorianos registrados en el exterior",
 };
 
-const ESTADOS_MX: Record<string, string> = {
+export const ESTADOS_MX: Record<string, string> = {
   AS: "Aguascalientes", BC: "Baja California", BS: "Baja California Sur", CC: "Campeche", CS: "Chiapas",
   CH: "Chihuahua", CL: "Coahuila", CM: "Colima", DF: "Ciudad de México", DG: "Durango", GT: "Guanajuato",
   GR: "Guerrero", HG: "Hidalgo", JC: "Jalisco", MC: "Estado de México", MN: "Michoacán", MS: "Morelos",

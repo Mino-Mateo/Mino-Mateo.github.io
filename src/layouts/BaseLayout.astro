@@ -94,6 +94,26 @@ const profile = {
         { threshold: 0.1 }
       );
       document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+
+      // Respaldo: WebKit a veces no avisa al observer si el scroll salta (enlace a una sección,
+      // scroll rápido). Todo lo que ya entró en pantalla se revela igual, para no dejarlo invisible.
+      let pendiente = false;
+      const revisar = () => {
+        pendiente = false;
+        const ocultos = document.querySelectorAll('[data-reveal]:not(.is-visible)');
+        if (!ocultos.length) return removeEventListener('scroll', alScroll);
+        for (const el of ocultos) {
+          if (el.getBoundingClientRect().top < innerHeight) {
+            el.classList.add('is-visible');
+            io.unobserve(el);
+          }
+        }
+      };
+      const alScroll = () => {
+        if (!pendiente) requestAnimationFrame(revisar);
+        pendiente = true;
+      };
+      addEventListener('scroll', alScroll, { passive: true });
     </script>
   </body>
 </html>
