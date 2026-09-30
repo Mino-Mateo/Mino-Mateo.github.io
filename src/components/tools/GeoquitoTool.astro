@@ -1,12 +1,6 @@
 ---
 import { Crosshair } from "@lucide/astro";
 ---
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H"
-  crossorigin="anonymous"
-/>
 <div class="card tool-card tool-card-reverse" data-reveal>
   <div class="tool-info">
     <h3>Consulta predial GeoQuito</h3>
@@ -17,6 +11,10 @@ import { Crosshair } from "@lucide/astro";
       geoportal municipal (sin autenticación). Versión reducida: el sistema
       completo también permite buscar por cédula, propietario, valoración y
       generar reportes, pero eso se queda fuera de este demo público.
+    </p>
+    <p class="tool-desc">
+      Privacidad: las búsquedas van directo a geocode.arcgis.com y
+      geoquito.quito.gob.ec. Este sitio no guarda nada.
     </p>
   </div>
 
@@ -43,6 +41,9 @@ import { Crosshair } from "@lucide/astro";
 </div>
 
 <script>
+  import leafletCss from "leaflet/dist/leaflet.css?url";
+
+
   const GEOCODER = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer";
   const BASE = "https://geoquito.quito.gob.ec/server/rest/services";
   const CATASTRO = "web_reference_dmc/catastro_dmc_view";
@@ -70,6 +71,7 @@ import { Crosshair } from "@lucide/astro";
   const ACCENT = tokens.getPropertyValue("--color-accent").trim();
   const BG = tokens.getPropertyValue("--color-bg").trim();
 
+  let L: any = null;
   let mapa: any = null;
   let marcador: any = null;
   let capaPredio: any = null;
@@ -161,7 +163,6 @@ import { Crosshair } from "@lucide/astro";
       if (mapa) {
         mapa.setView([lat, lng], 18);
         if (marcador) mapa.removeLayer(marcador);
-        const L = (window as any).L;
         marcador = L.circleMarker([lat, lng], {
           radius: 7,
           color: BG,
@@ -214,7 +215,6 @@ import { Crosshair } from "@lucide/astro";
       const f = feats[0];
       const a = f.attributes;
 
-      const L = (window as any).L;
       if (mapa) {
         if (capaPredio) mapa.removeLayer(capaPredio);
         if (f.geometry && f.geometry.rings) {
@@ -248,7 +248,6 @@ import { Crosshair } from "@lucide/astro";
   }
 
   function initMapa() {
-    const L = (window as any).L;
     if (!L || mapa) return;
     mapa = L.map("geo-map", { scrollWheelZoom: false, zoomControl: false }).setView([-0.1807, -78.4678], 12);
     L.control.zoom({ zoomInTitle: "Acercar", zoomOutTitle: "Alejar" }).addTo(mapa);
@@ -317,22 +316,35 @@ import { Crosshair } from "@lucide/astro";
     }
   });
 
-  // Leaflet se carga vía CDN (ver <script> al final del componente).
-  // Si ya está disponible, inicializa de inmediato; si no, espera su carga.
-  if ((window as any).L) {
-    initMapa();
-  } else {
-    window.addEventListener("leaflet-loaded", initMapa, { once: true });
+  // Leaflet (JS + CSS, autoalojados) se descarga solo cuando el mapa se acerca al viewport.
+  // El CSS va con ?url + <link> dinámico: un import normal lo subiría al <head> y bloquearía el render.
+  const mapEl = document.querySelector("#geo-map");
+  if (mapEl) {
+    const io = new IntersectionObserver(
+      async (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        try {
+          const css = document.createElement("link");
+          css.rel = "stylesheet";
+          css.href = leafletCss;
+          const cssListo = new Promise((ok, fail) => {
+            css.onload = ok;
+            css.onerror = fail;
+          });
+          document.head.append(css);
+          const [mod] = await Promise.all([import("leaflet"), cssListo]);
+          L = mod.default ?? mod;
+          initMapa();
+        } catch {
+          setStatus("No se pudo cargar el mapa. Recarga la página.", "err");
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+    io.observe(mapEl);
   }
 </script>
-
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH"
-  crossorigin="anonymous"
-  is:inline
-  defer
-  onload="window.dispatchEvent(new Event('leaflet-loaded'))"></script>
 
 <style>
 .geo-field {

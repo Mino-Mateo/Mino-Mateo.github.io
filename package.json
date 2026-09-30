@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@lucide/astro": "^1.48.0",
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "leaflet": "^1.9.4"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

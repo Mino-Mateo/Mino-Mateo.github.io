@@ -8,6 +8,10 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    # Leaflet 2.0 rompe la API (solo ESM, sin L.map()); migrar a mano
+    ignore:
+      - dependency-name: leaflet
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
