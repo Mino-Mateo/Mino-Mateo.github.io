@@ -10,12 +10,12 @@
     "test": "node --test tests/*.test.ts"
   },
   "dependencies": {
-    "@lucide/astro": "^1.48.0",
-    "astro": "^7.3.5",
+    "@lucide/astro": "^1.64.0",
+    "astro": "^7.4.4",
     "leaflet": "^1.9.4"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.10",
+    "@astrojs/check": "^0.9.12",
     "typescript": "^5.9.3"
   }
 }
